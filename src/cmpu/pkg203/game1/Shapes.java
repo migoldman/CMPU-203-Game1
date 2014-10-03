@@ -13,89 +13,128 @@ package cmpu.pkg203.game1;
 
 import javalib.worldimages.Posn;
 import javalib.worldimages.RectangleImage;
-import java.awt.*;
 import java.util.Random;
 
+enum Rotation{
+    left, right, up, down;
+}
+
 public class Shapes {
-    
-    int side;
-    int type;
-    Posn position;
-    Color color;
-    Random randInt;
-    boolean b_Shapes[][][] = {
-        {//This defines all the shapes, a matrix where true is
-            //where blocks will be and false will be empty
+    Rotation left, right, up, down;
+    int side, type, x, y;
+    Random random;
+    Shapes block;
+    Rotation orientation;
+    int b_Shapes[][][] = {
+        {//This defines all the shapes, a matrix where 1 is
+            //where blocks will be and 0 will be empty
+            //All orientations are up
             
-            //z shape
-            {false,false,false,false},
-            {false,false,false,false},
-            {false,true,true, false},
-            {false,false,true,true}
+            //Square shaped
+            {0,0,0,0},
+            {0,0,0,0},
+            {0,1,1,0},
+            {0,1,1,0},
         },
         {
             //s shape
-            {false,false,false,false},
-            {false,false,false,false},
-            {false, true, true, false},
-            {true, true, false, false}
+            {0,0,0,0},
+            {0,0,0,0},
+            {0,1,1,0},
+            {1,1,0,0}
         },
         {
             //line shape
-            {true,false,false,false},
-            {true,false,false,false},
-            {true,false,false,false},
-            {true,false,false,false},
+            {1,0,0,0},
+            {1,0,0,0},
+            {1,0,0,0},
+            {1,0,0,0},
         },
         {
             //T shaped
-            {false,false,false,false},
-            {false,false,false,false},
-            {false, true, true, true},
-            {false,false,true,false},
+            {0,0,0,0},
+            {0,0,0,0},
+            {0,1,1,1},
+            {0,0,1,0},
         },
         {
-            //Square shaped
-            {false,false,false,false},
-            {false,false,false,false},
-            {false,true,true,false},
-            {false,true,true,false},
+            //z shape
+            {0,0,0,0},
+            {0,0,0,0},
+            {0,1,1,0},
+            {0,0,1,1}
         },
         {
             //L shaped
-            {false,false,false,false},
-            {false,true,false,false},
-            {false, true,false,false},
-            {false,true,true,false},
+            {0,0,0,0},
+            {0,1,0,0},
+            {0,1,0,0},
+            {0,1,1,0},
         },
         {
             //reverse L shaped
-            {false,false,false,false},
-            {false,false,true,false},
-            {false,false,true,false},
-            {false,true,true,false},
+            {0,0,0,0},
+            {0,0,1,0},
+            {0,0,1,0},
+            {0,1,1,0},
         },
     };
-    
-    public Shapes(Posn position, Color color, int side, int type) {
-        this.position = position;
-        this.color = color;
-        this.side = side;
+    //this matrix is
+    public Shapes(Rotation orientation, int type, int x, int y) {
+        this.block = block;
+        this.orientation = orientation;
         this.type = type;
+        this.x = x;
+        this.y = y;
+    }
+    
+    public Shapes getShapes() {
+        return this.block;
+    }
+    
+    
+    public Rotation getOrientation() {
+        return this.orientation;
+    }
+    
+    public int getType() {
+        return this.type;
+    }
+    
+    
+    public int getX() {
+        return this.x;
+    }
+    
+    public int getY() {
+        return this.y;
+    }
+    
+    
+    public Shapes rotate() {
+        if(this.block.getOrientation().equals(up)) {
+            return new Shapes(left, this.type, this.x, this.y);
+        }
+        if(this.block.getOrientation().equals(left)) {
+            return new Shapes(down, this.type, this.x, this.y);
+        }
+        if(this.block.getOrientation().equals(down)) {
+            return new Shapes(right, this.type, this.x, this.y);
+        }
+        else {
+            return new Shapes(up, this.type, this.x,this.y);
+        }
     }
     
     //makes a random int 1-7 for block types
-    public int randBlock() {
-        return randInt.nextInt((0 - 6) + 1) + 0;
-    }    
+    public int randInt() {
+        return random.nextInt((0 - 6) + 1) + 0;
+    }     
     
-    public Shapes blockType(int type) {
-        int randBlock = randBlock();
-        
+    public Shapes makeBlock(){
+        int randInt = randInt();
+        if(randInt == 1) {
+            return 
+        }
     }
-
-    
-
-    
-    
 }
