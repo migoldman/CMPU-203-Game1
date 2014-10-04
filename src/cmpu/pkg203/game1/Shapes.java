@@ -25,8 +25,10 @@ public class Shapes {
     Random random;
     Shapes block;
     Rotation orientation;
+    int squareMatrix[][];
     int b_Shapes[][][] = {
-        {//This defines all the shapes, a matrix where 1 is
+        {
+        	//This defines all the shapes, a matrix where 1 is
             //where blocks will be and 0 will be empty
             //All orientations are up
             
@@ -79,22 +81,24 @@ public class Shapes {
             {0,1,1,0},
         },
     };
-    //this matrix is
+    
     public Shapes(Rotation orientation, int type, int x, int y) {
-        this.block = block;
-        this.orientation = orientation;
+        this.orientation = orientations;
         this.type = type;
         this.x = x;
         this.y = y;
     }
     
-    public Shapes getShapes() {
-        return this.block;
-    }
-    
-    
+    //public Shapes getShapes() {
+    //    return this.block;
+    //}
+        
     public Rotation getOrientation() {
         return this.orientation;
+    }
+    
+    public Shapes setOrientation(Rotation newOrientation) {
+    	return new Shapes(newOrientation, type, x, y);
     }
     
     public int getType() {
@@ -111,9 +115,15 @@ public class Shapes {
     }
     
     
-    public Shapes rotate() {
+    public int[][] rotate() {    	
         if(this.block.getOrientation().equals(up)) {
-            return new Shapes(left, this.type, this.x, this.y);
+        	for(int i = 0; i < 4; i++) {
+        		for(int j = 0; j < 4; j++) {
+        			//rotates it counter clockwise
+        			this.setOrientation(left);
+        			squareMatrix[i][j] = b_Shapes[type][j][i];
+        		}
+        	}
         }
         if(this.block.getOrientation().equals(left)) {
             return new Shapes(down, this.type, this.x, this.y);
@@ -129,12 +139,33 @@ public class Shapes {
     //makes a random int 1-7 for block types
     public int randInt() {
         return random.nextInt((0 - 6) + 1) + 0;
-    }     
+    }
     
-    public Shapes makeBlock(){
+    public int[][] makeBlock(){
         int randInt = randInt();
-        if(randInt == 1) {
-            return 
+        switch(randInt) {
+        	case 1:
+        		squareMatrix = b_Shapes[0];
+        		break;
+        	case 2:
+    			squareMatrix = b_Shapes[1];
+    			break;
+        	case 3:
+        		squareMatrix = b_Shapes[2];
+        		break;
+        	case 4:
+        		squareMatrix = b_Shapes[3];
+        		break;
+        	case 5:
+        		squareMatrix = b_Shapes[4];
+        		break;
+        	case 6:
+        		squareMatrix = b_Shapes[5];
+        		break;
+    		default:
+				squareMatrix = b_Shapes[6];
+				break;
         }
+        return squareMatrix;
     }
 }

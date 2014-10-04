@@ -23,18 +23,32 @@ public class TetrisWorld extends World {
     
     static final int wWidth = 800;
     static final int wHeight = 1600;
+    static final int side = 80;
+    static final int rows = wWidth/side;
+    static final int columns = wHeight/side;
+    int dx;
+    int dy;
     public WorldImage world;
-    Shapes block;
-    
-    public TetrisWorld() {
-        
+    Shapes user;
+    LinkedList placedShapes;
+    public TetrisWorld(Shapes user, LinkedList placedShapes, int x, int y, int dx, int dy) {
+        this.user = user;
+        this.placedShapes = placedShapes;
+        this.x = x;
+        this.y = y;
+        this.dx = dx;
+        this.dy = dy;
     }
     
     public void keyPressed(KeyEvent e){
+    	int keyCode = e.getKeyCode();
+    	switch(keyCode) {
+    	case KeyEvent.VK_UP:
+    		//check if it can move
+    		
+    	}
     }
-    
-    
-    
+ 
     public static void main(String[] args) {
         WorldCanvas c = new WorldCanvas(wWidth, wHeight);
     }
