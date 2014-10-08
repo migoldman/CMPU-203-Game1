@@ -12,14 +12,9 @@ package cmpu.pkg203.game1;
  */
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import javalib.funworld.World;
-import javalib.worldcanvas.WorldCanvas;
-import javalib.worldimages.Posn;
-import javalib.worldimages.WorldImage;
-import javalib.worldimages.RectangleImage;
 import java.awt.*;
 
-public class TetrisWorld extends World {
+public class TetrisWorld {
     
     static final int wWidth = 800;
     static final int wHeight = 1600;
@@ -28,13 +23,14 @@ public class TetrisWorld extends World {
     static final int columns = wHeight/side;
     static int[][] worldArray = new int[columns][rows];
     int counter;
+    int x;
+    int y;
     int dx;
     int dy;
-    public WorldImage world;
     Shapes user;
-    LinkedList placedShapes;
+    List placedShapes;
     
-    public TetrisWorld(Shapes user, LinkedList placedShapes, int x, int y, int dx, int dy) {
+    public TetrisWorld(Shapes user, List placedShapes, int x, int y, int dx, int dy) {
         this.user = user;
         this.placedShapes = placedShapes;
         this.x = x;
@@ -52,8 +48,8 @@ public class TetrisWorld extends World {
     	if(newX >= columns) {
     		return new TetrisWorld(this.user, this.placedShapes, this.x, this.y, 0, -dy);
     	}
-    	if(newY = 0) {
-    		return new TetrisWorld(user.isPlaced(), )
+    	if(newY == 0) {
+    		return new TetrisWorld(user.isPlaced(), placedShapes, x, y,0,0);
     	}
     }
     
@@ -74,12 +70,6 @@ public class TetrisWorld extends World {
     }
  
     public static void main(String[] args) {
-        WorldCanvas c = new WorldCanvas(wWidth, wHeight);
-    }
-
-    @Override
-    public WorldImage makeImage() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

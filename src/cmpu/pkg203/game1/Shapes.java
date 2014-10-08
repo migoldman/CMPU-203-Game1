@@ -11,8 +11,6 @@ package cmpu.pkg203.game1;
  * @author michaelgoldman
  */
 
-import javalib.worldimages.Posn;
-import javalib.worldimages.RectangleImage;
 import java.util.Random;
 
 enum Rotation{
@@ -83,7 +81,7 @@ public class Shapes {
     };
     
     public Shapes(Rotation orientation, int type, int x, int y) {
-        this.orientation = orientations;
+        this.orientation = orientation;
         this.type = type;
         this.x = x;
         this.y = y;
@@ -114,8 +112,13 @@ public class Shapes {
         return this.y;
     }
     
+    public void setPos(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
     
-    public int[][] rotate() {    	
+    
+    public Shapes rotate() {    	
         if(this.block.getOrientation().equals(up)) {
         	for(int i = 0; i < 4; i++) {
         		for(int j = 0; j < 4; j++) {
@@ -141,7 +144,8 @@ public class Shapes {
         return random.nextInt((0 - 6) + 1) + 0;
     }
     
-    public int[][] makeBlock(){
+    
+    public Shapes makeBlock(){
         int randInt = randInt();
         switch(randInt) {
         	case 1:
@@ -166,6 +170,13 @@ public class Shapes {
 				squareMatrix = b_Shapes[6];
 				break;
         }
-        return squareMatrix;
+        for(int i = 0; i< 4; i++) {
+            for(int j = 0; j< 4; j++) {
+                if(squareMatrix[i][j] == 1) {
+                    return
+                }
+            }
+        }
+            squareMatrix;
     }
 }
