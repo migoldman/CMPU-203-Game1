@@ -10,99 +10,274 @@ package cmpu.pkg203.game1;
  *
  * @author michaelgoldman
  */
-
 import java.util.Random;
 
-enum Rotation{
-    left, right, up, down;
-}
-
 public class Shapes {
-    Rotation left, right, up, down;
-    int side, type, x, y;
-    Random random;
+    int UP = 0, LEFT = 1, DOWN = 2, RIGHT = 3; 
+    final int side = 10;
+    int type, x, y;
     Shapes block;
-    Rotation orientation;
+    Random random;
+    int orientation;
     int squareMatrix[][];
-    int b_Shapes[][][] = {
+    //[type][rotation][x of grid][y of grid]
+    int SHAPES[][][][] = {
+    //This defines all the shapes, a matrix where 1 is
+        //where blocks will be and 0 will be empty
+           
+        //TYPE
+            //ROTATION
+                //X AND Y
+        
+        //Square shaped
         {
-        	//This defines all the shapes, a matrix where 1 is
-            //where blocks will be and 0 will be empty
-            //All orientations are up
-            
-            //Square shaped
-            {0,0,0,0},
-            {0,0,0,0},
-            {0,1,1,0},
-            {0,1,1,0},
+            {
+                //UP
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,1,1,0},
+                {0,1,1,0}
+            },
+            {
+                //LEFT
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,1,1,0},
+                {0,1,1,0}
+            },
+            {
+                //DOWN
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,1,1,0},
+                {0,1,1,0}
+            },
+            {
+                //RIGHT
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,1,1,0},
+                {0,1,1,0}
+            },
         },
+        
+        //S shape
         {
-            //s shape
-            {0,0,0,0},
-            {0,0,0,0},
-            {0,1,1,0},
-            {1,1,0,0}
+            {
+                //UP
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,1,1,0},
+                {1,1,0,0}
+            }, 
+            {
+                //LEFT
+                {0,0,0,0},
+                {1,0,0,0},
+                {1,1,0,0},
+                {0,1,0,0}
+            },
+            {
+                //DOWN
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,1,1,0},
+                {1,1,0,0}
+            }, 
+            {
+                //RIGHT
+                {0,0,0,0},
+                {1,0,0,0},
+                {1,1,0,0},
+                {0,1,0,0}
+            },
         },
+        
+        //Line shape
         {
-            //line shape
-            {1,0,0,0},
-            {1,0,0,0},
-            {1,0,0,0},
-            {1,0,0,0},
+            {
+                //UP
+                {1,0,0,0},
+                {1,0,0,0},
+                {1,0,0,0},
+                {1,0,0,0}
+            },
+            {
+                //LEFT
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,0,0},
+                {1,1,1,1}
+            },
+            {
+                //DOWN
+                {1,0,0,0},
+                {1,0,0,0},
+                {1,0,0,0},
+                {1,0,0,0}
+            },
+            {
+                //RIGHT
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,0,0},
+                {1,1,1,1}
+            },
         },
+        //T shape
         {
-            //T shaped
-            {0,0,0,0},
-            {0,0,0,0},
-            {0,1,1,1},
-            {0,0,1,0},
+            {
+                //UP
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,1,0},
+                {0,1,1,1},
+            },
+            {
+                //LEFT
+                {0,0,0,0},
+                {0,0,1,0},
+                {0,1,1,0},
+                {0,0,1,0}
+            },
+            {
+                //DOWN
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,1,1,1},
+                {0,0,1,0}
+            },
+            {
+                //RIGHT
+                {0,0,0,0},
+                {0,0,1,0},
+                {0,0,1,1},
+                {0,0,1,0}
+            }
         },
+        //Z shape
         {
-            //z shape
-            {0,0,0,0},
-            {0,0,0,0},
-            {0,1,1,0},
-            {0,0,1,1}
+            {
+                //UP
+                {0,0,0,0}, 
+                {0,0,0,0},
+                {0,1,1,0},
+                {0,0,1,1}
+            },
+            {
+                //LEFT
+                {0,0,0,0}, 
+                {0,0,0,1},
+                {0,0,1,1},
+                {0,0,1,0}
+            },
+            {
+                //DOWN
+                {0,0,0,0}, 
+                {0,0,0,0},
+                {0,1,1,0},
+                {0,0,1,1}
+            },
+            {
+                //RIGHT
+                {0,0,0,0}, 
+                {0,0,0,1},
+                {0,0,1,1},
+                {0,0,1,0}
+            },
         },
+        //L shaped
         {
-            //L shaped
-            {0,0,0,0},
-            {0,1,0,0},
-            {0,1,0,0},
-            {0,1,1,0},
+            {
+                //UP
+                {0,0,0,0},
+                {0,1,0,0},
+                {0,1,0,0},
+                {0,1,1,0},
+            },
+            {
+                //LEFT
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,1,0},
+                {1,1,1,0}
+            },
+            {
+                //DOWN
+                {0,0,0,0},
+                {0,1,1,0},
+                {0,0,1,0},
+                {0,0,1,0}
+            },
+            {
+                //RIGHT
+                {0,0,0,0},
+                {0,0,0,0},
+                {1,1,1,0},
+                {1,0,0,0}
+            },
         },
+        //reverse L shaped
         {
-            //reverse L shaped
-            {0,0,0,0},
-            {0,0,1,0},
-            {0,0,1,0},
-            {0,1,1,0},
+            {
+                //UP
+                {0,0,0,0},
+                {0,0,1,0},
+                {0,0,1,0},
+                {0,1,1,0}
+            },
+            {
+                //LEFT
+                {0,0,0,0},
+                {0,0,0,0},
+                {1,1,1,0},
+                {0,0,1,0}
+            },
+            {
+                //DOWN
+                {0,0,0,0},
+                {0,1,1,0},
+                {0,1,0,0},
+                {0,1,0,0}
+            },
+            {
+                //RIGHT
+                {0,0,0,0},
+                {0,0,0,0},
+                {1,0,0,0},
+                {1,1,1,0}
+            }
         },
     };
     
-    public Shapes(Rotation orientation, int type, int x, int y) {
+    //What is in a shape
+        //Has the type of shape it is
+        //Has the orientation of the shape
+        //Has a shape (based on x and y location in the  matrix)
+        //Has a x position and a y position in the world grid
+    public Shapes(int type, int orientation, int[][] squareMatrix, int x, int y) {
+        this.squareMatrix = squareMatrix;
         this.orientation = orientation;
-        this.type = type;
         this.x = x;
         this.y = y;
-    }
-    
-    //public Shapes getShapes() {
-    //    return this.block;
-    //}
-        
-    public Rotation getOrientation() {
-        return this.orientation;
-    }
-    
-    public Shapes setOrientation(Rotation newOrientation) {
-    	return new Shapes(newOrientation, type, x, y);
     }
     
     public int getType() {
         return this.type;
     }
     
+    public int getOrientation() {
+        return this.orientation;
+    }
+    
+    public int[][] getMatrix() {
+        return this.squareMatrix;
+    }
+    
+    //will check if the location in the matrix should be a block
+    public boolean isBlockHuh(int x, int y) {
+        return squareMatrix[x][y] == 1;
+    }
     
     public int getX() {
         return this.x;
@@ -112,71 +287,67 @@ public class Shapes {
         return this.y;
     }
     
-    public void setPos(int x, int y) {
+    public Shapes setPos(int x, int y) {
         this.x = x;
         this.y = y;
+        return new Shapes(this.type, this.orientation, this.squareMatrix, x, y);
     }
     
-    
-    public Shapes rotate() {    	
-        if(this.block.getOrientation().equals(up)) {
-        	for(int i = 0; i < 4; i++) {
-        		for(int j = 0; j < 4; j++) {
-        			//rotates it counter clockwise
-        			this.setOrientation(left);
-        			squareMatrix[i][j] = b_Shapes[type][j][i];
-        		}
-        	}
+    public Shapes rotate() {
+        int rotation = this.orientation;
+        Shapes temp;
+        switch(rotation) {
+            case 0:
+                squareMatrix=SHAPES[type][1];
+                temp = new Shapes(this.type,1,squareMatrix,this.x,this.y);
+                break;
+            case 1:
+                squareMatrix=SHAPES[type][2];
+                temp = new Shapes(this.type,2,squareMatrix,this.x,this.y);
+                break;
+            case 2:
+                squareMatrix=SHAPES[type][3];
+                temp = new Shapes(this.type,3,squareMatrix,this.x,this.y);
+                break;
+            default:
+                squareMatrix=SHAPES[type][0];
+                temp = new Shapes(this.type,0,squareMatrix,this.x,this.y);
         }
-        if(this.block.getOrientation().equals(left)) {
-            return new Shapes(down, this.type, this.x, this.y);
-        }
-        if(this.block.getOrientation().equals(down)) {
-            return new Shapes(right, this.type, this.x, this.y);
-        }
-        else {
-            return new Shapes(up, this.type, this.x,this.y);
-        }
-    }
+        return temp;
+    }  
     
     //makes a random int 1-7 for block types
-    public int randInt() {
+    public int randomInt() {
         return random.nextInt((0 - 6) + 1) + 0;
     }
-    
-    
+          
     public Shapes makeBlock(){
-        int randInt = randInt();
+        int randInt = randomInt();
+        int[][] temp = squareMatrix;
         switch(randInt) {
         	case 1:
-        		squareMatrix = b_Shapes[0];
+        		temp = SHAPES[0][0];
         		break;
         	case 2:
-    			squareMatrix = b_Shapes[1];
+    			temp = SHAPES[1][0];
     			break;
         	case 3:
-        		squareMatrix = b_Shapes[2];
+        		temp = SHAPES[2][0];
         		break;
         	case 4:
-        		squareMatrix = b_Shapes[3];
+        		temp = SHAPES[3][0];
         		break;
         	case 5:
-        		squareMatrix = b_Shapes[4];
+        		temp = SHAPES[4][0];
         		break;
         	case 6:
-        		squareMatrix = b_Shapes[5];
+        		temp = SHAPES[5][0];
         		break;
     		default:
-				squareMatrix = b_Shapes[6];
-				break;
+                        temp = SHAPES[6][0];
+                        break;
         }
-        for(int i = 0; i< 4; i++) {
-            for(int j = 0; j< 4; j++) {
-                if(squareMatrix[i][j] == 1) {
-                    return
-                }
-            }
-        }
-            squareMatrix;
+        return new Shapes(randInt, 0, temp, 5, 0);
     }
 }
+    
