@@ -46,15 +46,21 @@ public class TetrisWorld {
         return new TetrisWorld(user.makeBlock(), placedShapes);
     }
     
-    //it moves to dead list
-    //BAD
+    //checks if the block can keep moving down
     public boolean isPlacedHuh() {
-        boolean landedHuh = false;
         int xPos = user.getX();
-        int yPos = user.getY();
-        
-        for(int i = 0; i < rows; i++) {
-            for(int j = 0; j < placedShapes.size(); j++)
+        int yPos = user.getY();    
+        for(int i = 0; i< placedShapes.size(); i++) {
+            if(yPos-1 == placedShapes.get(i).getY() && 
+                xPos == placedShapes.get(i).getX()) {
+                return true;
+            }
+        }
+        if(yPos == 20) {
+            return true;
+        }
+        else {
+            return false; 
         }
     }
     
@@ -68,20 +74,28 @@ public class TetrisWorld {
     	if(newX >= columns) {
             return new TetrisWorld(this.user, this.placedShapes);
     	}
-    	if(newY == 0) {
-            return new TetrisWorld(user.makeBlock(randomInt()), placedShapes);
+    	if(isPlacedHuh()) {
+            placedShapes.add(user);
+            return new TetrisWorld(user.makeBlock(), placedShapes);
     	}
     }
     
     //Think it is good
     public TetrisWorld keyPressed(KeyEvent e){
     	int keyCode = e.getKeyCode();
+        int newX = x + dx;
+        int newY = y + dy;
     	switch(keyCode) {
             case KeyEvent.VK_LEFT:
-    		return new TetrisWorld(this.user.setPos(x-1, y+1), this.placedShapes);   
+                if(newX > 0) {
+                    return new TetrisWorld(this.user.setPos(x-1, y+1), this.placedShapes);   
+                }
             case KeyEvent.VK_RIGHT:
-    		return new TetrisWorld(this.user.setPos(x+1, y+1), this.placedShapes);
+                if(newX < columns) {
+                    return new TetrisWorld(this.user.setPos(x+1, y+1), this.placedShapes);
+                }
             case KeyEvent.VK_UP:
+                if()
     		return new TetrisWorld(this.user.rotate(),this.placedShapes);
             default:
                 return new TetrisWorld(this.user, this.placedShapes);
