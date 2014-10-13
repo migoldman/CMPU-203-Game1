@@ -21,9 +21,6 @@ public class Shapes {
     int x, y;
     ShapeType block;
     Rotation orientation;
-    int squareMatrix[][];
-    //[type][rotation][x of grid][y of grid]
-    
     
     //What is in a shape
         //Has the type of shape it is
@@ -37,6 +34,7 @@ public class Shapes {
         this.y = y;
     }
     
+    //Gives you an int representing the type of block it is
     public int getType() {
         ShapeType temp = block;
         switch (temp) {
@@ -55,11 +53,12 @@ public class Shapes {
             case rL:
                 return 6;
             default:
-                throw new NullPointerException();
+                throw new RuntimeException("TYPE IS WRONG");
                 
         }
     }
     
+    //Gives you an int representing the orientation the block has
     public int getOrientation() {
         Rotation rotation = orientation;
         switch(rotation) {
@@ -72,16 +71,18 @@ public class Shapes {
             case RIGHT:
                 return 3;
             default:
-                throw new NullPointerException();
+                throw new RuntimeException("Orientation isn't work");
         }
     }
     
+    //Gives you a new position for the block
     public Shapes setPos(int x, int y) {
         this.x = x;
         this.y = y;
         return new Shapes(block, this.orientation, x, y);
     }
     
+    //Rotates the block
     public Shapes rotate() {
         Rotation rotation = orientation;
         Shapes temp;

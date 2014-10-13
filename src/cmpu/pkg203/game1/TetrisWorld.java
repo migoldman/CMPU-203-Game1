@@ -131,28 +131,28 @@ public class TetrisWorld {
                 //UP
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-                {0, 0, 1, 0},
-                {0, 1, 1, 1},},
+                {0, 1, 0, 0},
+                {1, 1, 1, 0},},
             {
                 //LEFT
                 {0, 0, 0, 0},
-                {0, 0, 1, 0},
-                {0, 1, 1, 0},
-                {0, 0, 1, 0}
+                {0, 1, 0, 0},
+                {1, 1, 0, 0},
+                {0, 1, 0, 0}
             },
             {
                 //DOWN
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-                {0, 1, 1, 1},
-                {0, 0, 1, 0}
+                {1, 1, 1, 0},
+                {0, 1, 0, 0}
             },
             {
                 //RIGHT
                 {0, 0, 0, 0},
-                {0, 0, 1, 0},
-                {0, 0, 1, 1},
-                {0, 0, 1, 0}
+                {0, 1, 0, 0},
+                {0, 1, 1, 0},
+                {0, 1, 0, 0}
             }
         },
         //Z shape
@@ -161,29 +161,29 @@ public class TetrisWorld {
                 //UP
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-                {0, 1, 1, 0},
-                {0, 0, 1, 1}
+                {1, 1, 0, 0},
+                {0, 1, 1, 0}
             },
             {
                 //LEFT
                 {0, 0, 0, 0},
-                {0, 0, 0, 1},
-                {0, 0, 1, 1},
-                {0, 0, 1, 0}
+                {0, 0, 1, 0},
+                {0, 1, 1, 0},
+                {0, 1, 0, 0}
             },
             {
                 //DOWN
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-                {0, 1, 1, 0},
-                {0, 0, 1, 1}
+                {1, 1, 0, 0},
+                {0, 1, 1, 0}
             },
             {
                 //RIGHT
                 {0, 0, 0, 0},
-                {0, 0, 0, 1},
-                {0, 0, 1, 1},
-                {0, 0, 1, 0}
+                {0, 0, 1, 0},
+                {0, 1, 1, 0},
+                {0, 1, 0, 0}
             },},
         //L shaped
         {
@@ -192,7 +192,8 @@ public class TetrisWorld {
                 {0, 0, 0, 0},
                 {0, 1, 0, 0},
                 {0, 1, 0, 0},
-                {0, 1, 1, 0},},
+                {0, 1, 1, 0},
+            },
             {
                 //LEFT
                 {0, 0, 0, 0},
@@ -252,7 +253,7 @@ public class TetrisWorld {
         this.placedShapes = placedShapes;
     }
 
-    //Makes an empty world
+    //Makes an empty world (and a random spawn piece at top middle)
     public TetrisWorld newWorld() {
         return new TetrisWorld(makeBlock(randomInt()), new LinkedList());
     }
@@ -262,6 +263,7 @@ public class TetrisWorld {
         return random.nextInt((7 - 1) + 1) + 1;
     }
 
+    //makes a block of a certain type (based on number) in the top middle
     public Shapes makeBlock(int number) {
         switch (number) {
             case 1:
@@ -281,19 +283,24 @@ public class TetrisWorld {
         }
     }
 
+    //maybed not needed, not sure (afraid to delete in case I do need it)
     public int[][] getMatrix() {
         Shapes temp = new Shapes(user.block, user.orientation, user.x, user.y);
         return SHAPES[temp.getType()][temp.getOrientation()];
     }
 
-    //will check if the location in the matrix should be a block
+    //same as above
     public boolean isBlockHuh(int xM, int yM) {
         //this is bad coding. Will hopefully fix
         world = new TetrisWorld(this.user, this.placedShapes);
         return world.getMatrix()[xM][yM] == 1;
     }
 
-    //checks if the block can keep moving down
+    //Checks:
+        //if the block is right above a placed block
+            //aka their x pos is the same and the 
+            //y pos of the user is one less than the placed one
+        //OR if the y pos of the block is at the bottom (this might lead to problems with tick)
     public boolean aboveBlockHuh() {
         int xPos = user.x;
         int yPos = user.y;
@@ -302,17 +309,15 @@ public class TetrisWorld {
                 return true;
             }
         }
-        if (yPos == 20) {
+        if (yPos >= 20) {
             return true;
         } else {
             return false;
         }
     }
     
-    UP, LEFT, RIGHT, DOWN;
-    SQUARE, S, LINE, T, Z, L, rL;
-    
-    public int getWidth(Shapes block, int column) {
+    //The max widths of all the blocks and all their orientations
+    public int getWidth(Shapes block) {
         int type = block.getType();
         int orientation = block.getOrientation();
         switch(type) {
@@ -365,23 +370,111 @@ public class TetrisWorld {
             case 5: //l
                 switch(orientation) {
                     case 0:
-                        return 
+                        return 2;
                     case 1:
+                        return 3;
                     case 2:
+                        return 2;
                     case 3:
+                        return 3;
             }
             case 6: //rl
                 switch(orientation) {
                     case 0:
+                        return 2;
                     case 1:
+                        return 3;
                     case 2:
+                        return 2;
                     case 3:
+                        return 3;
             }
             default:
-                throw new NullPointerException();
+                throw new RuntimeException("AAAGGGHHHHH (width is wrong)");
         }
     }
     
+    //The max heights of all the blocks and all their orientations
+    public int getHeight(Shapes block) {
+        int type = block.getType();
+        int orientation = block.getOrientation();
+        switch(type) {
+            case 0:
+                return 2;
+            case 1:
+                switch(orientation) {
+                    case 0:
+                        return 2;
+                    case 1:
+                        return 3;
+                    case 2:
+                        return 2;
+                    case 3:
+                        return 3;
+                }
+            case 2:
+                switch(orientation) {
+                    case 0:
+                        return 4;
+                    case 1:
+                        return 1;
+                    case 2:
+                        return 4;
+                    case 3:
+                        return 1;
+                }
+            case 3:
+                switch(orientation) {
+                    case 0:
+                        return 2;
+                    case 1:
+                        return 3;
+                    case 2:
+                        return 2;
+                    case 3:
+                        return 3;
+                }
+            case 4:
+                switch(orientation) {
+                    case 0:
+                        return 2;
+                    case 1:
+                        return 3;
+                    case 2:
+                        return 2;
+                    case 3:
+                        return 3;
+                }
+            case 5:
+                switch(orientation) {
+                    case 0:
+                        return 3;
+                    case 1:
+                        return 2;
+                    case 2:
+                        return 3;
+                    case 3:
+                        return 2;
+                }
+            case 6:
+                switch(orientation) {
+                    case 0:
+                        return 3;
+                    case 1:
+                        return 2;
+                    case 2:
+                        return 3;
+                    case 3:
+                        return 2;
+                }
+            default:
+                throw new RuntimeException("this is what true sadness is (height is wrong)");
+        }
+    }
+    
+//Used with rotation
+    //checks if if the location of a current block if valid compared to a placed one
+        //This might need work since I don't think it will work with only by comparing it to one block
     public boolean isValidHuh(Shapes block) {
         int xPos = block.x;
         int yPos = block.y;
@@ -390,10 +483,14 @@ public class TetrisWorld {
                 return false;
             }
         }
+        if(block.x + getHeight(block) >= 20) {
+            
+        }
+        if()
         return true;
     }
     
-
+    
     //Think it is good
     public TetrisWorld keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
