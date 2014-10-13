@@ -11,14 +11,18 @@ package cmpu.pkg203.game1;
  * @author michaelgoldman
  */
 import java.util.Random;
-
+enum Rotation {
+    UP, LEFT, RIGHT, DOWN;
+}
+enum ShapeType {
+    SQUARE, S, LINE, T, Z, L, rL; 
+}
 public class Shapes {
-    int UP = 0, LEFT = 1, DOWN = 2, RIGHT = 3; 
     final int side = 10;
-    int type, x, y;
-    Shapes block;
+    int x, y;
+    ShapeType block;
+    Rotation orientation;
     Random random;
-    int orientation;
     int squareMatrix[][];
     //[type][rotation][x of grid][y of grid]
     int SHAPES[][][][] = {
@@ -255,28 +259,61 @@ public class Shapes {
         //Has the orientation of the shape
         //Has a shape (based on x and y location in the  matrix)
         //Has a x position and a y position in the world grid
-    public Shapes(int type, int orientation, int[][] squareMatrix, int x, int y) {
-        this.squareMatrix = squareMatrix;
+    public Shapes(ShapeType block, Rotation orientation, int x, int y) {
+        this.block = block;
         this.orientation = orientation;
         this.x = x;
         this.y = y;
     }
     
     public int getType() {
-        return this.type;
+        ShapeType temp = block;
+        switch (temp) {
+            case SQUARE:
+                return 0;
+            case S:
+                return 1;
+            case LINE:
+                return 2;
+            case T:
+                return 3;
+            case Z:
+                return 4;
+            case L:
+                return 5;
+            case rL:
+                return 6;
+            default:
+                throw new NullPointerException();
+                
+        }
     }
     
     public int getOrientation() {
-        return this.orientation;
+        Rotation rotation = orientation;
+        switch(rotation) {
+            case UP:
+                return 0;
+            case LEFT: 
+                return 1;
+            case DOWN:
+                return 2;
+            case RIGHT:
+                return 3;
+            default:
+                throw new NullPointerException();
+        }
     }
     
     public int[][] getMatrix() {
-        return this.squareMatrix;
+        Shapes temp = new Shapes(this.block,this.orientation,this.x,this.y);
+        return SHAPES[temp.getType()][temp.getOrientation()];
     }
     
     //will check if the location in the matrix should be a block
-    public boolean isBlockHuh(int x, int y) {
-        return squareMatrix[x][y] == 1;
+    public boolean isBlockHuh(int xM, int yM) {
+        Shapes temp = new Shapes(this.block, this.orientation, this.x, this.y);
+        return temp.getMatrix()[xM][yM] == 1;
     }
     
     public int getX() {
@@ -290,28 +327,24 @@ public class Shapes {
     public Shapes setPos(int x, int y) {
         this.x = x;
         this.y = y;
-        return new Shapes(this.type, this.orientation, this.squareMatrix, x, y);
+        return new Shapes(block, this.orientation, x, y);
     }
     
     public Shapes rotate() {
-        int rotation = this.orientation;
+        Rotation rotation = orientation;
         Shapes temp;
         switch(rotation) {
-            case 0:
-                squareMatrix=SHAPES[type][1];
-                temp = new Shapes(this.type,1,squareMatrix,this.x,this.y);
+            case UP:
+                temp = new Shapes(this.block,Rotation.LEFT,this.x,this.y);
                 break;
-            case 1:
-                squareMatrix=SHAPES[type][2];
-                temp = new Shapes(this.type,2,squareMatrix,this.x,this.y);
+            case LEFT:
+                temp = new Shapes(this.block,Rotation.DOWN,this.x,this.y);
                 break;
-            case 2:
-                squareMatrix=SHAPES[type][3];
-                temp = new Shapes(this.type,3,squareMatrix,this.x,this.y);
+            case DOWN:
+                temp = new Shapes(this.block,Rotation.RIGHT,this.x,this.y);
                 break;
             default:
-                squareMatrix=SHAPES[type][0];
-                temp = new Shapes(this.type,0,squareMatrix,this.x,this.y);
+                temp = new Shapes(this.block,Rotation.UP,this.x,this.y);
         }
         return temp;
     }  
@@ -321,33 +354,23 @@ public class Shapes {
         return random.nextInt((0 - 6) + 1) + 0;
     }
           
-    public Shapes makeBlock(){
-        int randInt = randomInt();
-        int[][] temp = squareMatrix;
-        switch(randInt) {
+    public Shapes makeBlock(int number){
+        switch(number) {
         	case 1:
-        		temp = SHAPES[0][0];
-        		break;
+                    return new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 0);
         	case 2:
-    			temp = SHAPES[1][0];
-    			break;
+                    return new Shapes(ShapeType.S, Rotation.UP, 5, 0);
         	case 3:
-        		temp = SHAPES[2][0];
-        		break;
+                    return new Shapes(ShapeType.LINE, Rotation.UP, 5, 0);
         	case 4:
-        		temp = SHAPES[3][0];
-        		break;
+                    return new Shapes(ShapeType.T, Rotation.UP, 5, 0);
         	case 5:
-        		temp = SHAPES[4][0];
-        		break;
+                    return new Shapes(ShapeType.Z, Rotation.UP, 5, 0);
         	case 6:
-        		temp = SHAPES[5][0];
-        		break;
+                    return new Shapes(ShapeType.L, Rotation.UP, 5, 0);
     		default:
-                        temp = SHAPES[6][0];
-                        break;
+                    return new Shapes(ShapeType.rL, Rotation.UP, 5, 0);
         }
-        return new Shapes(randInt, 0, temp, 5, 0);
     }
 }
     

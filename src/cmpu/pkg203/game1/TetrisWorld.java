@@ -17,14 +17,10 @@ import java.awt.*;
 
 public class TetrisWorld {
     
-    static final int wWidth = 100;
-    static final int wHeight = 200;
+
     static final int rows = 20;
     static final int columns = 10;
     static int[][] worldArray;
-    int counter;
-    int x;
-    int y;
     int dx;
     int dy;
     Shapes user;
@@ -43,8 +39,10 @@ public class TetrisWorld {
                 worldArray[x][y] = 0;
             }
         }
-        return new TetrisWorld(user.makeBlock(), placedShapes);
+        return new TetrisWorld(user.makeBlock(user.randomInt()), placedShapes);
     }
+    
+
     
     //checks if the block can keep moving down
     public boolean isPlacedHuh() {
@@ -66,8 +64,8 @@ public class TetrisWorld {
     
     //BAD
     public TetrisWorld tick() {
-    	int newX = x + dx;
-    	int newY = y + dy;
+    	int newX = user.getX() + dx;
+    	int newY = user.getY() + dy;
     	if(newX <= 0) {
             return new TetrisWorld(this.user, this.placedShapes);    	
             }
@@ -76,26 +74,35 @@ public class TetrisWorld {
     	}
     	if(isPlacedHuh()) {
             placedShapes.add(user);
-            return new TetrisWorld(user.makeBlock(), placedShapes);
+            return new TetrisWorld(user.makeBlock(user.randomInt()), placedShapes);
     	}
     }
     
     //Think it is good
     public TetrisWorld keyPressed(KeyEvent e){
     	int keyCode = e.getKeyCode();
-        int newX = x + dx;
-        int newY = y + dy;
+        int x = user.getX();
+        int y = user.getY();
+        int newX = user.getX() + dx;
+        int newY = user.getY() + dy;
     	switch(keyCode) {
             case KeyEvent.VK_LEFT:
                 if(newX > 0) {
                     return new TetrisWorld(this.user.setPos(x-1, y+1), this.placedShapes);   
                 }
+                else {
+                    this.user.x = 0;
+                    return new TetrisWorld(this.user, this.placedShapes);
+                }
             case KeyEvent.VK_RIGHT:
                 if(newX < columns) {
                     return new TetrisWorld(this.user.setPos(x+1, y+1), this.placedShapes);
                 }
+                else {
+                    this.user.x = columns;
+                    return new TetrisWorld(this.user, this.placedShapes);
+                }
             case KeyEvent.VK_UP:
-                if()
     		return new TetrisWorld(this.user.rotate(),this.placedShapes);
             default:
                 return new TetrisWorld(this.user, this.placedShapes);
