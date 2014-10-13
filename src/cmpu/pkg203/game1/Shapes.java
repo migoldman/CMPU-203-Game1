@@ -315,15 +315,7 @@ public class Shapes {
         Shapes temp = new Shapes(this.block, this.orientation, this.x, this.y);
         return temp.getMatrix()[xM][yM] == 1;
     }
-    
-    public int getX() {
-        return this.x;
-    }
-    
-    public int getY() {
-        return this.y;
-    }
-    
+
     public Shapes setPos(int x, int y) {
         this.x = x;
         this.y = y;
