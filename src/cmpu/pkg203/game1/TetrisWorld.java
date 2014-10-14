@@ -612,7 +612,7 @@ public class TetrisWorld {
     }
     public WorldImage blockImages(Shapes block) {
         int XPOS = user.x;
-        int YPOS = user.y+4 + 2; 
+        int YPOS = user.y+4; 
             //thrid row on the grid 
             //(since it is all bottom left oriented)
         int orientation = block.getOrientation();
@@ -620,7 +620,7 @@ public class TetrisWorld {
             case 0:
                 shapeDraw(XPOS*S,YPOS*S,
                         XPOS++*S,YPOS++*S,
-                        XPOS*S,1+YPOS*S,
+                        XPOS*S,YPOS++*S,
                         XPOS++*S,YPOS++*S);
             case 1://S
                 switch(orientation) {
@@ -628,45 +628,137 @@ public class TetrisWorld {
                         shapeDraw(XPOS*S,YPOS++*S,
                                 XPOS++*S,YPOS*S,
                                 XPOS++*S,YPOS++*S,
-                                (2+XPOS)*S,)
+                                (2+XPOS)*S,YPOS*S);
                     case 1:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS++*S,YPOS++*S,
+                                XPOS++*S,(2+YPOS)*S);
                     case 2:
+                        shapeDraw(XPOS*S,YPOS++*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S,
+                                (2+XPOS)*S,YPOS*S);
                     case 3:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS++*S,YPOS++*S,
+                                XPOS++*S,(2+YPOS)*S);
                 }
             case 2://Line
                 switch(orientation) {
                     case 0:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS*S,(2+YPOS)*S,
+                                XPOS*S,(3+YPOS)*S);
                     case 1:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS++*S,YPOS*S,
+                                (2+XPOS)*S,YPOS*S,
+                                (3+XPOS)*S,YPOS*S);
                     case 2:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS*S,(2+YPOS)*S,
+                                XPOS*S,(3+YPOS)*S);
                     case 3:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS++*S,YPOS*S,
+                                (2+XPOS)*S,YPOS*S,
+                                (3+XPOS)*S,YPOS*S);
                 }
             case 3:
                 switch(orientation) {
                     case 0:
+                        shapeDraw(XPOS*S,YPOS++*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S,
+                                (XPOS+2)*S,YPOS++*S);
                     case 1:
+                        shapeDraw(XPOS*S,YPOS++*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S,
+                                XPOS++*S,(YPOS+2)*S);
                     case 2:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S,
+                                (XPOS+2)*S,YPOS*S);
                     case 3:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS*S,(YPOS+2)*S,
+                                XPOS++*S,YPOS++*S);
                 }
             case 4:
                 switch(orientation) {
                     case 0:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S,
+                                (2+XPOS)*S,YPOS++*S);
                     case 1:
+                        shapeDraw(XPOS*S,YPOS++*S,
+                                XPOS*S,(YPOS+2)*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S);
                     case 2:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S,
+                                (XPOS+2)*S,YPOS++*S);
                     case 3:
+                        shapeDraw(XPOS*S,YPOS++*S,
+                                XPOS*S,(YPOS+2)*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S);
                 }
             case 5:
                 switch(orientation) {
                     case 0:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS*S,(YPOS+2)*S,
+                                XPOS++*S,(YPOS+2)*S);
                     case 1:
+                        shapeDraw(XPOS*S,YPOS++*S,
+                                XPOS++*S,YPOS++*S,
+                                (2+XPOS)*S,YPOS++*S,
+                                (2+XPOS)*S,YPOS*S);
                     case 2:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S,
+                                XPOS++*S,(2+YPOS)*S);
                     case 3:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS++*S,YPOS++*S,
+                                (XPOS+2)*S,YPOS++*S);
                 }
             case 6:
                 switch(orientation) {
                     case 0:
+                        shapeDraw(XPOS*S,(2+YPOS)*S,
+                                XPOS++*S,YPOS*S,
+                                XPOS++*S,YPOS++*S,
+                                XPOS++*S,(2+YPOS)*S);
                     case 1:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS++*S,YPOS*S,
+                                (XPOS+2)*S,YPOS*S,
+                                (XPOS+2)*S,YPOS++*S);
                     case 2:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS*S,(2+YPOS)*S,
+                                XPOS++*S,YPOS++*S);
                     case 3:
+                        shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,YPOS++*S,
+                                XPOS++*S,YPOS++*S,
+                                (2+XPOS)*S,YPOS++*S);
                 }
             default:
                 throw new RuntimeException("AAAGGGGHHH WHY DOES THIS HAPPEN");
