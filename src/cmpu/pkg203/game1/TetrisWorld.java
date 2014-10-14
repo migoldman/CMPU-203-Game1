@@ -30,7 +30,6 @@ public class TetrisWorld {
     
     int S = 30;
     
-    int counter = 0;
     int frames;
     
     Shapes user;
@@ -53,7 +52,6 @@ public class TetrisWorld {
                 {1, 1, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-\
             },
             {
                 //LEFT
@@ -610,6 +608,7 @@ public class TetrisWorld {
                 new OverlayImages(blockDraw(x3,y3), 
                         blockDraw(x4,y4)))));
     }
+    //I really hope there is a better way to do this so I don't ever have to do this again
     public WorldImage blockImages(Shapes block) {
         int XPOS = user.x;
         int YPOS = user.y+4; 
@@ -766,14 +765,50 @@ public class TetrisWorld {
     }
     
     
-    public WorldImage blockImage(Shapes user, LinkedList<Shapes> placedShapes) {
-        if(placedShapes.isEmpty())
+    public WorldImage placedImages(LinkedList<Shapes> placedShapes, int counter) {
+        WorldImage temp;
+        if(placedShapes.isEmpty()) {
+            temp = blockImages(user);
+        }
+        else if(counter ==-1) {
+            temp = blockImages(user);
+        }
+        else { 
+            temp = new OverlayImages(placedImages(placedShapes,counter-1),
+                blockImages(placedShapes.get(counter)));
+        }
+        return temp;
+    }
+    
+    public WorldImage drawScore() {
+        return new TextImage(new Posn(screenWidth/2,screenHeight-30),
+        "Score: " + placedShapes.size(), 8, new White());
     }
     
     public WorldImage makeImage() {
-        
+        return new OverlayImages((placedImages(placedShapes, placedShapes.size()-1)),
+                new OverlayImages(blockImages(user), drawScore()));
     }
     
+    public TetrisWorld tick() {
+        if(blockBelowHuh(user)) {
+            placedShapes.add(new Shapes(user.block,user.orientation,user.x,user.y));
+            return new TetrisWorld(makeBlock(randomInt()),placedShapes);
+        }
+        else if(blockOnLeftHuh(user)){
+            user.x = 0;
+            return new TetrisWorld(user,placedShapes);
+        }
+        else if(blockOnRightHuh(user)){
+            user.x = columns-getWidth(user);
+            return new TetrisWorld(user,placedShapes);
+        }
+        else {
+            return new TetrisWorld(user,placedShapes);
+        }
+    }
+    
+
     //Game over
     public boolean gameOver() {
         return blockBelowHuh(makeBlock(randomInt()));
@@ -783,7 +818,7 @@ public class TetrisWorld {
         if(gameOver()) {
              return new WorldEnd(true, new OverlayImages(this.makeImage(),
                     new TextImage(new Posn(screenWidth/2,screenHeight/2), 
-                            ("Game Over: You've reached level " + counter), 
+                            ("Game Over: You've reached level " + placedShapes.size()), 
                             20, new White())));
         }
     }
