@@ -28,7 +28,7 @@ public class TetrisWorld {
     static int[][] worldArray;
     Random random;
     
-    int IMAGECONVERT = 30;
+    int blockspace = 30;
     
     int counter = 0;
     int frames;
@@ -580,24 +580,36 @@ public class TetrisWorld {
                 screenWidth, screenHeight,new Black());
     }
     
+    //This is just silly
+    public WorldImage blockDraw(int x, int y) {
+        return new RectangleImage(new Posn(x, y), blockspace, blockspace, new Red());
+    }
+    public WorldImage shapeDraw(int x1, int y1, int x2, int y2,
+                                    int x3, int y3, int x4, int y4) {
+        return new OverlayImages(background(), 
+                new OverlayImages(blockDraw(x1,y1),
+                new OverlayImages(blockDraw(x2,y2),
+                new OverlayImages(blockDraw(x3,y3), 
+                        blockDraw(x4,y4)))));
+    }
     public WorldImage blockImages(Shapes block) {
         int xpos = user.x;
         int ypos = user.y;
-        int xjpg = xpos*IMAGECONVERT;
-        int yjpg = ypos*IMAGECONVERT;
+        int xjpg = xpos*blockspace;
+        int yjpg = ypos*blockspace;
         int orientation = block.getOrientation();
         switch(block.getType()) {
             case 0:
-                return new RectangleImage(new Posn(xjpg,yjpg*IMAGECONVERT),
-                    IMAGECONVERT, IMAGECONVERT, new Red()); 
-            case 1:
+                shapeDraw(xjpg,yjpg,)
+            case 1://S
                 switch(orientation) {
                     case 0:
+                        return new RectangleImage(new Pos())
                     case 1:
                     case 2:
                     case 3:
                 }
-            case 2:
+            case 2://Line
                 switch(orientation) {
                     case 0:
                     case 1:
