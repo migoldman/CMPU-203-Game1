@@ -564,8 +564,13 @@ public class TetrisWorld extends World {
                     break;
                 }
             default:
-                System.out.println("default running with ke: " + ke);
-                temp = new TetrisWorld(this.user.setPos(user.x, newY), placedShapes);
+                if(!blockBelow(user,placedShapes) && user.y + getHeight(user) < 20) {
+                    System.out.println("default running with ke: " + ke);
+                    temp = new TetrisWorld(this.user.setPos(user.x, newY), placedShapes);
+                }
+                else{
+                    temp = new TetrisWorld(this.user,placedShapes);
+                }
         }
         return temp;
     }
@@ -781,11 +786,11 @@ public class TetrisWorld extends World {
         } else if (blockOnLeft(user, placedShapes)||(user.x <=0)) {
             System.out.println("tick blockLeft");
             frames++;
-            return new TetrisWorld(user.setPos(0, user.y+1), placedShapes);
+            return new TetrisWorld(user.setPos(user.x, user.y+1), placedShapes);
         } else if (blockOnRight(user, placedShapes)||(user.x + getWidth(user) >=10)) {
             System.out.println("tick blockRight");
             frames++;
-            return new TetrisWorld(user.setPos(9, user.y+1), placedShapes);
+            return new TetrisWorld(user.setPos(user.x, user.y+1), placedShapes);
         } else {
             System.out.println("tick default");
             frames++;
