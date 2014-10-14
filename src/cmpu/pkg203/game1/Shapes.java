@@ -102,4 +102,7 @@ public class Shapes {
         return temp;
     }
 
+    public String ToString() {
+        return "Type: " + this.block + "  Orientation: " + this.orientation + "  X: " + this.x + "  Y: " +this.y;
+    }
 }

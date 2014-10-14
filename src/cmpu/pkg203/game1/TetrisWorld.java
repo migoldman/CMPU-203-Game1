@@ -277,7 +277,7 @@ public class TetrisWorld extends World {
         return SHAPES[user.getType()][user.getOrientation()];
     }
 
-    public boolean onFloorHuh() {
+    static public boolean onFloorHuh() {
         int ypos = user.y;
         int height = getHeight(user);
         boolean land = false;
@@ -545,14 +545,14 @@ public class TetrisWorld extends World {
         System.out.println("key event: " + ke);
         switch (ke) {
             case ("left"):
-                if (!blockOnLeft(user, placedShapes) ||(user.x>0) ) {
+                if (!blockOnLeft(user, placedShapes)&&(user.x>0) ) {
                     temp = new TetrisWorld(this.user.setPos(x - 1, y), this.placedShapes);
                 } else {
                     temp = new TetrisWorld(this.user.setPos(x, y), this.placedShapes);
                 }
                 break;
             case ("right"):
-                if (!blockOnRight(user, placedShapes)||(user.x +getWidth(user) <20) ) {
+                if (!blockOnRight(user, placedShapes)&&(user.x +getWidth(user) <10) ) {
                     temp = new TetrisWorld(this.user.setPos(x + 1, y), this.placedShapes);
                 } else {
                     temp = new TetrisWorld(this.user.setPos(x, y), this.placedShapes);
@@ -773,7 +773,7 @@ public class TetrisWorld extends World {
         if (gameOver()) {
             loseScreen();
         }
-        System.out.println("PlacedShapes size is " + placedShapes.size());
+        System.out.println(user.ToString());
         if (blockBelow(user, placedShapes) || onFloorHuh()) {
             System.out.println("tick blockBelow||on");
             placedShapes.add(new Shapes(user.block, user.orientation, user.x, user.y));
@@ -781,11 +781,11 @@ public class TetrisWorld extends World {
         } else if (blockOnLeft(user, placedShapes)||(user.x <=0)) {
             System.out.println("tick blockLeft");
             frames++;
-            return new TetrisWorld(user.setPos(user.x, user.y+1), placedShapes);
-        } else if (blockOnRight(user, placedShapes)||(user.x + getWidth(user) >=20)) {
+            return new TetrisWorld(user.setPos(0, user.y+1), placedShapes);
+        } else if (blockOnRight(user, placedShapes)||(user.x + getWidth(user) >=10)) {
             System.out.println("tick blockRight");
             frames++;
-            return new TetrisWorld(user, placedShapes);
+            return new TetrisWorld(user.setPos(9, user.y+1), placedShapes);
         } else {
             System.out.println("tick default");
             frames++;
@@ -817,6 +817,9 @@ public class TetrisWorld extends World {
     public static void main(String[] args) {
 
         //TESTERS
+        TetrisWorld lWall = new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,0),new LinkedList<Shapes>());
+        TetrisWorld rWall = new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>());
+        
         Shapes square = new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 0);
         LinkedList<Shapes> MT = new LinkedList<Shapes>();
         LinkedList<Shapes> stackTest = new LinkedList<Shapes>();
@@ -825,6 +828,7 @@ public class TetrisWorld extends World {
         System.out.println("random number: " + randomInt());
 
         System.out.println("Height of [0][0] " + getHeight(square));
+        System.out.println("lWall.");
         /*System.out.println("Get Type returned a square to be " + makeBlock(1).getType() + " should be 0");
          System.out.println("Get Type returned a S to be " + makeBlock(2).getType() + " should be 1");
          System.out.println("Get Type returned a line to be " + makeBlock(3).getType() + " should be 2");
@@ -836,22 +840,16 @@ public class TetrisWorld extends World {
 
         System.out.println("Block on block has block below true = " + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 16, 5), stackTest).blockBelow(user, stackTest));
 
-        System.out.println("height of User should be 2 = " + getHeight(user));
-        System.out.println("y of User should be 0 = " + user.y);
         System.out.println("Block on floor has floor below true = "
                 + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 18), MT).onFloorHuh());
 
-        System.out.println("Block next to Lwall has block on left true = " + 
-         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,5),new LinkedList<Shapes>()).blockOnLeft(user,placedShapes));
-         System.out.println("Block next to Lwall has block on right false =" + 
-         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,5),
-         new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
+         
+         /*System.out.println("Block next to Lwall has block on right false =" + 
+         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,5),new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
          System.out.println("Block next to Rwall has block on right true =" + 
-         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),
-         new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
+         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
          System.out.println("Block next to Rwall has block on left  false = " + 
-         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),
-         new LinkedList<Shapes>()).blockOnLeft(user,placedShapes));
+         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnLeft(user,placedShapes));*/
         TetrisWorld game = new TetrisWorld();
         game.bigBang(300, 600, 1);
     }
