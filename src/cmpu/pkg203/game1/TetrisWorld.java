@@ -25,7 +25,7 @@ public class TetrisWorld extends World{
     static final int screenWidth = columns*300;
     static final int screenHeight = rows*300;
     static int[][] worldArray;
-    static Random random;
+    static Random random = new Random();
     
     static final int S = 30;
     
@@ -280,7 +280,6 @@ public class TetrisWorld extends World{
     }
     
     public TetrisWorld(Shapes user, LinkedList<Shapes> placedShapes) {
-        super();
         this.user = user;
         this.placedShapes = placedShapes;
     }
@@ -313,35 +312,49 @@ public class TetrisWorld extends World{
     }
 
     //gets the matrix of the shape type and orientation
-    public int[][] getMatrix(Shapes user) {
+    static public int[][] getMatrix(Shapes user) {
         return SHAPES[user.getType()][user.getOrientation()];
     }
     
-    //Checks if there is a floor below the block or a placed one
-    public boolean blockBelowHuh(Shapes user) {
+    public boolean onFloorHuh() {
+        int ypos = user.y;
+        int height = getHeight(user);
+        boolean land = false;
+        if(ypos + height >=20) {
+            land = true;
+        }
+        return land;
+    }
+    
+    public boolean blockBelow(Shapes user, LinkedList<Shapes> placed) {
         boolean badMove = false;
-        for (Shapes temp : placedShapes) {
-            for(int ucol = 0; ucol < 4; ucol++) {
-                for(int urow = 0; urow < 4; urow++) {
-                    for(int pcol = 0; pcol < 4; pcol++) {
-                        for(int prow = 0; prow < 4; prow++) {
-                            badMove |= ((user.y + urow + 1) == (temp.y + prow)
-                                    && ((user.x + ucol) == (temp.x + pcol))
-                                    && (getMatrix(user)[ucol][urow]) ==1
-                                        && (getMatrix(temp)[pcol][prow] == 1));
-                        }
-                    }
-                    if(user.y + getHeight(user) >= 20) {
-                        badMove = true;
-                    }
-                }
-            }
+        for(int i = 0; i < placed.size(); i++) {
+            badMove |= blockBelowHuh(user, placed.get(i));
         }
         return badMove;
     }
     
+    //Checks if there is a floor below the block or a placed one
+    public boolean blockBelowHuh(Shapes user, Shapes placed) {
+        boolean badMove = false;
+            for(int ucol = 0; ucol < 4; ucol++) {
+                for(int urow = 0; urow < 4; urow++) {
+                    for(int pcol = 0; pcol < 4; pcol++) {
+                        for(int prow = 0; prow < 4; prow++) {
+                            badMove |= ((user.y + urow + 1) == (placed.y + prow)
+                                    && ((user.x + ucol) == (placed.x + pcol))
+                                    && (getMatrix(user)[ucol][urow]) ==1
+                                        && (getMatrix(placed)[pcol][prow] == 1));
+                    }
+                }
+            }
+        }
+    return badMove;
+
+    }
+    
     //Checks if a block is on the left, if it is going into the left wall, or floor
-    public boolean blockOnLeftHuh(Shapes user) {
+    static public boolean blockOnLeftHuh(Shapes user) {
         boolean badMove = false;
         for (Shapes temp : placedShapes) {
             for(int ucol = 0; ucol < 4; ucol++) {
@@ -354,9 +367,6 @@ public class TetrisWorld extends World{
                                         && (getMatrix(temp)[pcol][prow] == 1));
                         }
                     }
-                    if(0 > user.x || user.y + urow >= 20) {
-                        badMove = true;
-                    }
                 }
             }
         }
@@ -364,7 +374,7 @@ public class TetrisWorld extends World{
     }
     
     //Checks if a block is on the right, if it is going into the right wall, or floor
-    public boolean blockOnRightHuh(Shapes user) {
+    static public boolean blockOnRightHuh(Shapes user) {
         boolean badMove = false;
         for (Shapes temp : placedShapes) {
             
@@ -378,9 +388,6 @@ public class TetrisWorld extends World{
                                         && (getMatrix(temp)[pcol][prow] == 1));
                         }
                     }
-                    if(user.x + getWidth(user) >= 10 || user.y + urow >= 20) {
-                        badMove = true;
-                    }
                 }
             }
         }
@@ -389,7 +396,7 @@ public class TetrisWorld extends World{
     
     
     //The max widths of all the blocks and all their orientations 
-    public int getWidth(Shapes block) {
+    static public int getWidth(Shapes block) {
         int type = block.getType();
         int orientation = block.getOrientation();
         switch(type) {
@@ -467,7 +474,7 @@ public class TetrisWorld extends World{
     }
     
     //The max heights of all the blocks and all their orientations
-    public int getHeight(Shapes block) {
+    static public int getHeight(Shapes block) {
         int type = block.getType();
         int orientation = block.getOrientation();
         switch(type) {
@@ -547,7 +554,7 @@ public class TetrisWorld extends World{
     //If there is a block on the left or right or if it is too close to an
         //edge after the rotation, do return false, else true;
             //Might potentially lead to trouble, unsure
-    public boolean canRotate(Shapes block) {
+    static public boolean canRotate(Shapes block) {
         Shapes rotatedB = block.rotate();
         if(blockOnRightHuh(rotatedB) 
                 || blockOnLeftHuh(rotatedB) 
@@ -559,23 +566,24 @@ public class TetrisWorld extends World{
     }
     
     
-    public TetrisWorld keyPressed(String ke) {
+    public TetrisWorld onKeyEvent(String ke) {
         TetrisWorld temp;
         int x = user.x;
         int y = user.y;
         int newY = y + 1; 
         //Block is always moving down, while can move left or right with x
+        System.out.println("key event: " + ke);
         switch (ke) {
             case ("left"):
-                if (blockOnLeftHuh(user)) {
-                    temp = new TetrisWorld(this.user.setPos(x - 1, newY), this.placedShapes);
+                if (!blockOnLeftHuh(user)) {
+                    temp = new TetrisWorld(this.user.setPos(x - 1, y), this.placedShapes);
                 } else {
                     temp = new TetrisWorld(this.user.setPos(x, newY), this.placedShapes);
                 }
                 break;
             case ("right"):
-                if (blockOnRightHuh(user)) {
-                    temp = new TetrisWorld(this.user.setPos(x + 1, newY), this.placedShapes);
+                if (!blockOnRightHuh(user)) {
+                    temp = new TetrisWorld(this.user.setPos(x + 1, y), this.placedShapes);
                 } else {
                     temp = new TetrisWorld(this.user.setPos(x, newY), this.placedShapes);
                 }
@@ -586,6 +594,7 @@ public class TetrisWorld extends World{
                     break;
                 }
             default:
+                System.out.println("default running with ke: " + ke); 
                 temp = new TetrisWorld(this.user.setPos(user.x, newY), placedShapes);
         }
         return temp;
@@ -601,7 +610,7 @@ public class TetrisWorld extends World{
     
     //This is just silly
     public WorldImage blockDraw(int x, int y) {
-        return new RectangleImage(new Posn(x, y), S, S, new Red());
+        return new RectangleImage(new Posn(x, y), S, S, new White());
     }
     public WorldImage shapeDraw(int x1, int y1, int x2, int y2,
                                     int x3, int y3, int x4, int y4) {
@@ -614,159 +623,156 @@ public class TetrisWorld extends World{
     //I really hope there is a better way to do this so I don't ever have to do this again
     public WorldImage blockImages(Shapes block) {
         int XPOS = user.x;
-        int YPOS = user.y+4; 
+        int YPOS = user.y; 
             //thrid row on the grid 
             //(since it is all bottom left oriented)
         int orientation = block.getOrientation();
         switch(block.getType()) {
-            case 1:
-                shapeDraw(XPOS*S,YPOS*S,
-                        XPOS++*S,YPOS++*S,
-                        XPOS*S,YPOS++*S,
-                        XPOS++*S,YPOS++*S);
-            case 2://S
+            case 0:
+                return shapeDraw(XPOS*S,YPOS*S,
+                        XPOS*S,(YPOS+1)*S,
+                        (XPOS+1)*S,YPOS*S,
+                        (XPOS+1)*S,(YPOS+1)*S);
+            case 1://S
                 switch(orientation) {
                     case 0:
-                        shapeDraw(XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
+                        return shapeDraw(XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
                                 (2+XPOS)*S,YPOS*S);
                     case 1:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS++*S,
-                                XPOS++*S,(2+YPOS)*S);
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(2+YPOS)*S);
                     case 2:
-                        shapeDraw(XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
+                        return shapeDraw(XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
                                 (2+XPOS)*S,YPOS*S);
                     case 3:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS++*S,
-                                XPOS++*S,(2+YPOS)*S);
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(2+YPOS)*S);
                 }
-            case 3://Line
+            case 2://Line
                 switch(orientation) {
                     case 0:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
                                 XPOS*S,(2+YPOS)*S,
                                 XPOS*S,(3+YPOS)*S);
                     case 1:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS++*S,YPOS*S,
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                (XPOS+1)*S,YPOS*S,
                                 (2+XPOS)*S,YPOS*S,
                                 (3+XPOS)*S,YPOS*S);
                     case 2:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
                                 XPOS*S,(2+YPOS)*S,
                                 XPOS*S,(3+YPOS)*S);
                     case 3:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS++*S,YPOS*S,
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                (XPOS+1)*S,YPOS*S,
                                 (2+XPOS)*S,YPOS*S,
                                 (3+XPOS)*S,YPOS*S);
+                }
+            case 3:
+                switch(orientation) {
+                    case 0:
+                        return shapeDraw(XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+2)*S,(YPOS+1)*S);
+                    case 1:
+                        return shapeDraw(XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(YPOS+2)*S);
+                    case 2:
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+2)*S,YPOS*S);
+                    case 3:
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
+                                XPOS*S,(YPOS+2)*S,
+                                (XPOS+1)*S,(YPOS+1)*S);
                 }
             case 4:
                 switch(orientation) {
                     case 0:
-                        shapeDraw(XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
-                                (XPOS+2)*S,YPOS++*S);
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (2+XPOS)*S,(YPOS+1)*S);
                     case 1:
-                        shapeDraw(XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
-                                XPOS++*S,(YPOS+2)*S);
-                    case 2:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
-                                (XPOS+2)*S,YPOS*S);
-                    case 3:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
+                        return shapeDraw(XPOS*S,(YPOS+1)*S,
                                 XPOS*S,(YPOS+2)*S,
-                                XPOS++*S,YPOS++*S);
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S);
+                    case 2:
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+2)*S,(YPOS+1)*S);
+                    case 3:
+                        return shapeDraw(XPOS*S,(YPOS+1)*S,
+                                XPOS*S,(YPOS+2)*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S);
                 }
             case 5:
                 switch(orientation) {
                     case 0:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
-                                (2+XPOS)*S,YPOS++*S);
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
+                                XPOS*S,(YPOS+2)*S,
+                                (XPOS+1)*S,(YPOS+2)*S);
                     case 1:
-                        shapeDraw(XPOS*S,YPOS++*S,
-                                XPOS*S,(YPOS+2)*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S);
+                        return shapeDraw(XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (2+XPOS)*S,(YPOS+1)*S,
+                                (2+XPOS)*S,YPOS*S);
                     case 2:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
-                                (XPOS+2)*S,YPOS++*S);
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(2+YPOS)*S);
                     case 3:
-                        shapeDraw(XPOS*S,YPOS++*S,
-                                XPOS*S,(YPOS+2)*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S);
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+2)*S,(YPOS+1)*S);
                 }
             case 6:
                 switch(orientation) {
                     case 0:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
-                                XPOS*S,(YPOS+2)*S,
-                                XPOS++*S,(YPOS+2)*S);
+                        return shapeDraw(XPOS*S,(2+YPOS)*S,
+                                (XPOS+1)*S,YPOS*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(2+YPOS)*S);
                     case 1:
-                        shapeDraw(XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS++*S,
-                                (2+XPOS)*S,YPOS++*S,
-                                (2+XPOS)*S,YPOS*S);
-                    case 2:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
-                                XPOS++*S,(2+YPOS)*S);
-                    case 3:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS++*S,
-                                (XPOS+2)*S,YPOS++*S);
-                }
-            case 7:
-                switch(orientation) {
-                    case 0:
-                        shapeDraw(XPOS*S,(2+YPOS)*S,
-                                XPOS++*S,YPOS*S,
-                                XPOS++*S,YPOS++*S,
-                                XPOS++*S,(2+YPOS)*S);
-                    case 1:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS++*S,YPOS*S,
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                (XPOS+1)*S,YPOS*S,
                                 (XPOS+2)*S,YPOS*S,
-                                (XPOS+2)*S,YPOS++*S);
+                                (XPOS+2)*S,(YPOS+1)*S);
                     case 2:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
                                 XPOS*S,(2+YPOS)*S,
-                                XPOS++*S,YPOS++*S);
+                                (XPOS+1)*S,(YPOS+1)*S);
                     case 3:
-                        shapeDraw(XPOS*S,YPOS*S,
-                                XPOS*S,YPOS++*S,
-                                XPOS++*S,YPOS++*S,
-                                (2+XPOS)*S,YPOS++*S);
+                        return shapeDraw(XPOS*S,YPOS*S,
+                                XPOS*S,(YPOS+1)*S,
+                                (XPOS+1)*S,(YPOS+1)*S,
+                                (2+XPOS)*S,(YPOS+1)*S);
                 }
             default:
-               return shapeDraw(XPOS*S,YPOS*S,
-                        XPOS++*S,YPOS++*S,
-                        XPOS*S,YPOS++*S,
-                        XPOS++*S,YPOS++*S);
+               throw new RuntimeException("It is default in draw");
         }
                     
     }
@@ -797,28 +803,33 @@ public class TetrisWorld extends World{
                 new OverlayImages(blockImages(user), drawScore()));
     }
     
-    public TetrisWorld tick() {
-        if(blockBelowHuh(user)) {
+    public TetrisWorld onTick() {
+        if(blockBelow(user, placedShapes)||onFloorHuh()) {
+            System.out.println("tick blockBelow");
             placedShapes.add(new Shapes(user.block,user.orientation,user.x,user.y));
             return new TetrisWorld(makeBlock(randomInt()),placedShapes);
         }
         else if(blockOnLeftHuh(user)){
-            user.x = 0;
+            System.out.println("tick blockLeft");
+            frames++;
             return new TetrisWorld(user,placedShapes);
         }
         else if(blockOnRightHuh(user)){
-            user.x = columns-getWidth(user);
+            System.out.println("tick blockRight");
+            frames++;
             return new TetrisWorld(user,placedShapes);
         }
         else {
-            return new TetrisWorld(user,placedShapes);
+            System.out.println("tick default");
+            frames++;
+            return new TetrisWorld(user,placedShapes).onKeyEvent("");
         }
     }
     
 
     //Game over
     public boolean gameOver() {
-        return blockBelowHuh(makeBlock(randomInt()));
+        return blockBelow(makeBlock(1), placedShapes);
         }
     
     public WorldEnd loseScreen() {
@@ -832,6 +843,57 @@ public class TetrisWorld extends World{
     }
     
     public static void main(String[] args) {
+        
+        
+        
+        //TESTERS
+        Shapes square = new Shapes(ShapeType.SQUARE,Rotation.UP,5,0);
+        LinkedList<Shapes> MT = new LinkedList<Shapes>();
+        LinkedList<Shapes> stackTest = new LinkedList<Shapes>();
+        stackTest.add(new Shapes(ShapeType.SQUARE, Rotation.UP, 16, 5));
+                
+        
+        System.out.println("random number: " + randomInt());
+        
+        System.out.println("Height of [0][0] " + getHeight(square));
+        
+        /*System.out.println("Get Type returned a square to be " + makeBlock(1).getType() + " should be 0");
+        System.out.println("Get Type returned a S to be " + makeBlock(2).getType() + " should be 1");
+        System.out.println("Get Type returned a line to be " + makeBlock(3).getType() + " should be 2");
+        System.out.println("Get Type returned a t to be " + makeBlock(4).getType() + " should be 3");
+        System.out.println("Get Type returned a z to be " + makeBlock(5).getType() + " should be 4");
+        System.out.println("Get Type returned a l to be " + makeBlock(6).getType() + " should be 5");
+        System.out.println("Get Type returned a rl to be " + makeBlock(7).getType() + " should be 6");
+        System.out.println("Get Type random is " + makeBlock(randomInt()).getType());*/
+        
+        ;
+        
+        System.out.println("Block on block has block below true = " + 
+                new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,16,5),stackTest).blockBelow(user, stackTest));
+        
+        System.out.println("height of User should be 2 = " + getHeight(user));
+        System.out.println("y of User should be 0 = " + user.y);
+        System.out.println("Block on floor has floor below true = " +
+                new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,5,18),MT).onFloorHuh());
+        
+        /*System.out.println("Block next to Lwall has block on left true = " + 
+                new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,5),
+                        new LinkedList<Shapes>()).blockOnLeftHuh(user));
+        System.out.println("Block next to Lwall has block on right false =" + 
+                new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,5),
+                        new LinkedList<Shapes>()).blockOnRightHuh(user));
+        System.out.println("Block next to Rwall has block on right true =" + 
+                new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),
+                        new LinkedList<Shapes>()).blockOnRightHuh(user));
+        System.out.println("Block next to Rwall has block on right true =" + 
+                new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,9,5),
+                        new LinkedList<Shapes>()).blockOnRightHuh(user));
+        System.out.println("Block next to Rwall has block on right  true = " + 
+                new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,10,5),
+                        new LinkedList<Shapes>()).blockOnRightHuh(user));
+        System.out.println("Block next to Rwall has block on left  false = " + 
+                new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),
+                        new LinkedList<Shapes>()).blockOnLeftHuh(user));*/
         TetrisWorld game = new TetrisWorld();
         game.bigBang(300, 600, 1);
     }
