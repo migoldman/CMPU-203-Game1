@@ -11,18 +11,28 @@ package cmpu.pkg203.game1;
  */
 import java.util.Random;
 import java.util.LinkedList;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
-import java.awt.*;
+
+
+import java.awt.Color;
+import javalib.funworld.*;
+import javalib.colors.*;
+import javalib.worldcanvas.*;
+import javalib.worldimages.*;
 
 public class TetrisWorld {
     
     static final int rows = 20;
     static final int columns = 10;
+    static final int screenWidth = columns*300;
+    static final int screenHeight = rows*300;
     static int[][] worldArray;
     Random random;
-    int dx;
-    int dy;
+    
+    int IMAGECONVERT = 30;
+    
+    int counter = 0;
+    int frames;
+    
     Shapes user;
     LinkedList<Shapes> placedShapes;
     TetrisWorld world;
@@ -283,40 +293,83 @@ public class TetrisWorld {
         }
     }
 
-    //maybed not needed, not sure (afraid to delete in case I do need it)
-    public int[][] getMatrix() {
-        Shapes temp = new Shapes(user.block, user.orientation, user.x, user.y);
-        return SHAPES[temp.getType()][temp.getOrientation()];
-    }
-
-    //same as above
-    public boolean isBlockHuh(int xM, int yM) {
-        //this is bad coding. Will hopefully fix
-        world = new TetrisWorld(this.user, this.placedShapes);
-        return world.getMatrix()[xM][yM] == 1;
-    }
-
-    //Checks:
-        //if the block is right above a placed block
-            //aka their x pos is the same and the 
-            //y pos of the user is one less than the placed one
-        //OR if the y pos of the block is at the bottom (this might lead to problems with tick)
-    public boolean aboveBlockHuh() {
-        int xPos = user.x;
-        int yPos = user.y;
-        for (Shapes placedShape : placedShapes) {
-            if (yPos + 1 == placedShape.y && xPos == placedShape.x) {
-                return true;
-            }
-        }
-        if (yPos >= 20) {
-            return true;
-        } else {
-            return false;
-        }
+    //gets the matrix of the shape type and orientation
+    public int[][] getMatrix(Shapes user) {
+        return SHAPES[user.getType()][user.getOrientation()];
     }
     
-    //The max widths of all the blocks and all their orientations
+    //Checks if there is a floor below the block or a placed one
+    public boolean blockBelowHuh(Shapes user) {
+        boolean badMove = false;
+        for (Shapes temp : placedShapes) {
+            for(int ucol = 0; ucol < 4; ucol++) {
+                for(int urow = 0; urow < 4; urow++) {
+                    for(int pcol = 0; pcol < 4; pcol++) {
+                        for(int prow = 0; prow < 4; prow++) {
+                            badMove |= ((user.y + urow + 1) == (temp.y + prow)
+                                    && ((user.x + ucol) == (temp.x + pcol))
+                                    && (getMatrix(user)[ucol][urow]) ==1
+                                        && (getMatrix(temp)[pcol][prow] == 1));
+                        }
+                    }
+                    if(user.y + getHeight(user) >= 20) {
+                        badMove = true;
+                    }
+                }
+            }
+        }
+        return badMove;
+    }
+    
+    //Checks if a block is on the left, if it is going into the left wall, or floor
+    public boolean blockOnLeftHuh(Shapes user) {
+        boolean badMove = false;
+        for (Shapes temp : placedShapes) {
+            for(int ucol = 0; ucol < 4; ucol++) {
+                for(int urow = 0; urow < 4; urow++) {
+                    for(int pcol = 0; pcol < 4; pcol++) {
+                        for(int prow = 0; prow < 4; prow++) {
+                            badMove |= ((user.y + urow) == (temp.y + prow)
+                                    && ((user.x + ucol - 1) == (temp.x + pcol))
+                                    && (getMatrix(user)[ucol][urow]) ==1
+                                        && (getMatrix(temp)[pcol][prow] == 1));
+                        }
+                    }
+                    if(0 > user.x || user.y + urow >= 20) {
+                        badMove = true;
+                    }
+                }
+            }
+        }
+        return badMove;
+    }
+    
+    //Checks if a block is on the right, if it is going into the right wall, or floor
+    public boolean blockOnRightHuh(Shapes user) {
+        boolean badMove = false;
+        for (Shapes temp : placedShapes) {
+            
+            for(int ucol = 0; ucol < 4; ucol++) {
+                for(int urow = 0; urow < 4; urow++) {
+                    for(int pcol = 0; pcol < 4; pcol++) {
+                        for(int prow = 0; prow < 4; prow++) {
+                            badMove |= ((user.y + urow) == (temp.y + prow)
+                                    && ((user.x + ucol + 1) == (temp.x + pcol))
+                                    && (getMatrix(user)[ucol][urow]) ==1
+                                        && (getMatrix(temp)[pcol][prow] == 1));
+                        }
+                    }
+                    if(user.x + getWidth(user) >= 10 || user.y + urow >= 20) {
+                        badMove = true;
+                    }
+                }
+            }
+        }
+        return badMove;
+    }
+    
+    
+    //The max widths of all the blocks and all their orientations 
     public int getWidth(Shapes block) {
         int type = block.getType();
         int orientation = block.getOrientation();
@@ -472,50 +525,44 @@ public class TetrisWorld {
         }
     }
     
-//Used with rotation
-    //checks if if the location of a current block if valid compared to a placed one
-        //This might need work since I don't think it will work with only by comparing it to one block
-    public boolean isValidHuh(Shapes block) {
-        int xPos = block.x;
-        int yPos = block.y;
-        for (Shapes placedShape : placedShapes) {
-            if (yPos == placedShape.y && xPos == placedShape.x) {
-                return false;
-            }
+    //If there is a block on the left or right or if it is too close to an
+        //edge after the rotation, do return false, else true;
+            //Might potentially lead to trouble, unsure
+    public boolean canRotate(Shapes block) {
+        Shapes rotatedB = block.rotate();
+        if(blockOnRightHuh(rotatedB) 
+                || blockOnLeftHuh(rotatedB) 
+                || getWidth(rotatedB) + rotatedB.x > 10 
+                || getWidth(rotatedB) + rotatedB.x < 0) {
+            return false;
         }
-        if(block.x + getHeight(block) >= 20) {
-            
-        }
-        if()
         return true;
     }
     
     
-    //Think it is good
-    public TetrisWorld keyPressed(KeyEvent e) {
-        int keyCode = e.getKeyCode();
+    public TetrisWorld keyPressed(String ke) {
         TetrisWorld temp;
         int x = user.x;
         int y = user.y;
         int newY = y + 1; 
         //Block is always moving down, while can move left or right with x
-        switch (keyCode) {
-            case KeyEvent.VK_LEFT:
-                if (x-1 >= 0) {
+        switch (ke) {
+            case ("left"):
+                if (blockOnLeftHuh(user)) {
                     temp = new TetrisWorld(this.user.setPos(x - 1, newY), this.placedShapes);
                 } else {
                     temp = new TetrisWorld(this.user.setPos(x, newY), this.placedShapes);
                 }
                 break;
-            case KeyEvent.VK_RIGHT:
-                if (x+1 <= columns) {
+            case ("right"):
+                if (blockOnRightHuh(user)) {
                     temp = new TetrisWorld(this.user.setPos(x + 1, newY), this.placedShapes);
                 } else {
                     temp = new TetrisWorld(this.user.setPos(x, newY), this.placedShapes);
                 }
                 break;
-            case KeyEvent.VK_UP:
-                if(isValidHuh(user.rotate())) {
+            case ("up"):
+                if(canRotate(user)) {
                     temp = new TetrisWorld(this.user.rotate(), this.placedShapes);
                     break;
                 }
@@ -524,8 +571,92 @@ public class TetrisWorld {
         }
         return temp;
     }
-
-    public TetrisWorld tick() {
+    
+    
+    ///////WORLD STUFF
+    
+    public WorldImage background() {
+        return new RectangleImage(new Posn(screenWidth/2, screenHeight/2), 
+                screenWidth, screenHeight,new Black());
+    }
+    
+    public WorldImage blockImages(Shapes block) {
+        int xpos = user.x;
+        int ypos = user.y;
+        int xjpg = xpos*IMAGECONVERT;
+        int yjpg = ypos*IMAGECONVERT;
+        int orientation = block.getOrientation();
+        switch(block.getType()) {
+            case 0:
+                return new RectangleImage(new Posn(xjpg,yjpg*IMAGECONVERT),
+                    IMAGECONVERT, IMAGECONVERT, new Red()); 
+            case 1:
+                switch(orientation) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                }
+            case 2:
+                switch(orientation) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                }
+            case 3:
+                switch(orientation) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                }
+            case 4:
+                switch(orientation) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                }
+            case 5:
+                switch(orientation) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                }
+            case 6:
+                switch(orientation) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                }
+            default:
+                throw new RuntimeException("AAAGGGGHHH WHY DOES THIS HAPPEN");
+        }
+    }
+    
+    
+    public WorldImage blockImage(Shapes user, LinkedList<Shapes> placedShapes) {
+        if(placedShapes.isEmpty())
+    }
+    
+    public WorldImage makeImage() {
         
+    }
+    
+    //Game over
+    public boolean gameOver() {
+        return blockBelowHuh(makeBlock(randomInt()));
+        }
+    
+    public WorldEnd loseScreen() {
+        if(gameOver()) {
+             return new WorldEnd(true, new OverlayImages(this.makeImage(),
+                    new TextImage(new Posn(screenWidth/2,screenHeight/2), 
+                            ("Game Over: You've reached level " + counter), 
+                            20, new White())));
+        }
     }
 }
