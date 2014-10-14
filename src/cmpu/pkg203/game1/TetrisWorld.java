@@ -13,28 +13,27 @@ import java.util.Random;
 import java.util.LinkedList;
 
 
-import java.awt.Color;
 import javalib.funworld.*;
 import javalib.colors.*;
 import javalib.worldcanvas.*;
 import javalib.worldimages.*;
 
-public class TetrisWorld {
+public class TetrisWorld extends World{
     
     static final int rows = 20;
     static final int columns = 10;
     static final int screenWidth = columns*300;
     static final int screenHeight = rows*300;
     static int[][] worldArray;
-    Random random;
+    static Random random;
     
-    int S = 30;
+    static final int S = 30;
     
-    int frames;
+    static int frames;
     
-    Shapes user;
-    LinkedList<Shapes> placedShapes;
-    TetrisWorld world;
+    static Shapes user;
+    static LinkedList<Shapes> placedShapes;
+    static TetrisWorld world;
 
     static final int SHAPES[][][][] = {
         //This defines all the shapes, a matrix where 1 is
@@ -273,24 +272,28 @@ public class TetrisWorld {
             }
         },};
 
-    //Make the world a dense matrix of falses, then add in graphics
+
+    public TetrisWorld() {
+        this.user = new Shapes(ShapeType.SQUARE,Rotation.UP,5,0);
+        this.placedShapes = new LinkedList<Shapes>();
+        this.frames = 0;
+    }
+    
     public TetrisWorld(Shapes user, LinkedList<Shapes> placedShapes) {
+        super();
         this.user = user;
         this.placedShapes = placedShapes;
     }
 
-    //Makes an empty world (and a random spawn piece at top middle)
-    public TetrisWorld newWorld() {
-        return new TetrisWorld(makeBlock(randomInt()), new LinkedList());
-    }
+
 
     //makes a random int 1-7 for block types
-    public int randomInt() {
+    public static int randomInt() {
         return random.nextInt((7 - 1) + 1) + 1;
     }
 
     //makes a block of a certain type (based on number) in the top middle
-    public Shapes makeBlock(int number) {
+    public static Shapes makeBlock(int number) {
         switch (number) {
             case 1:
                 return new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 0);
@@ -616,12 +619,12 @@ public class TetrisWorld {
             //(since it is all bottom left oriented)
         int orientation = block.getOrientation();
         switch(block.getType()) {
-            case 0:
+            case 1:
                 shapeDraw(XPOS*S,YPOS*S,
                         XPOS++*S,YPOS++*S,
                         XPOS*S,YPOS++*S,
                         XPOS++*S,YPOS++*S);
-            case 1://S
+            case 2://S
                 switch(orientation) {
                     case 0:
                         shapeDraw(XPOS*S,YPOS++*S,
@@ -644,7 +647,7 @@ public class TetrisWorld {
                                 XPOS++*S,YPOS++*S,
                                 XPOS++*S,(2+YPOS)*S);
                 }
-            case 2://Line
+            case 3://Line
                 switch(orientation) {
                     case 0:
                         shapeDraw(XPOS*S,YPOS*S,
@@ -667,7 +670,7 @@ public class TetrisWorld {
                                 (2+XPOS)*S,YPOS*S,
                                 (3+XPOS)*S,YPOS*S);
                 }
-            case 3:
+            case 4:
                 switch(orientation) {
                     case 0:
                         shapeDraw(XPOS*S,YPOS++*S,
@@ -690,7 +693,7 @@ public class TetrisWorld {
                                 XPOS*S,(YPOS+2)*S,
                                 XPOS++*S,YPOS++*S);
                 }
-            case 4:
+            case 5:
                 switch(orientation) {
                     case 0:
                         shapeDraw(XPOS*S,YPOS*S,
@@ -713,7 +716,7 @@ public class TetrisWorld {
                                 XPOS++*S,YPOS*S,
                                 XPOS++*S,YPOS++*S);
                 }
-            case 5:
+            case 6:
                 switch(orientation) {
                     case 0:
                         shapeDraw(XPOS*S,YPOS*S,
@@ -736,7 +739,7 @@ public class TetrisWorld {
                                 XPOS++*S,YPOS++*S,
                                 (XPOS+2)*S,YPOS++*S);
                 }
-            case 6:
+            case 7:
                 switch(orientation) {
                     case 0:
                         shapeDraw(XPOS*S,(2+YPOS)*S,
@@ -760,8 +763,12 @@ public class TetrisWorld {
                                 (2+XPOS)*S,YPOS++*S);
                 }
             default:
-                throw new RuntimeException("AAAGGGGHHH WHY DOES THIS HAPPEN");
+               return shapeDraw(XPOS*S,YPOS*S,
+                        XPOS++*S,YPOS++*S,
+                        XPOS*S,YPOS++*S,
+                        XPOS++*S,YPOS++*S);
         }
+                    
     }
     
     
@@ -821,5 +828,11 @@ public class TetrisWorld {
                             ("Game Over: You've reached level " + placedShapes.size()), 
                             20, new White())));
         }
+        else return new WorldEnd(false, this.makeImage());
+    }
+    
+    public static void main(String[] args) {
+        TetrisWorld game = new TetrisWorld();
+        game.bigBang(300, 600, 1);
     }
 }
