@@ -24,7 +24,7 @@ public class TetrisWorld extends World {
     static final int screenWidth = columns * 300;
     static final int screenHeight = rows * 300;
     static int[][] worldArray;
-    boolean gameOver = false;
+    static boolean gameOver = false;
     static Random random = new Random();
 
     static final int S = 30;
@@ -246,6 +246,12 @@ public class TetrisWorld extends World {
     public TetrisWorld(Shapes user, LinkedList<Shapes> placedShapes) {
         this.user = user;
         this.placedShapes = placedShapes;
+    }
+    
+    //testing
+    public static TetrisWorld newWorld() {
+        frames = 0;
+        return new TetrisWorld(makeBlock(randomInt()), new LinkedList<Shapes>());
     }
 
     //makes a random int 1-7 for block types

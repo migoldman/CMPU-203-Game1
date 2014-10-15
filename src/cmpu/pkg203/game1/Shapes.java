@@ -105,4 +105,8 @@ public class Shapes {
     public String ToString() {
         return "Type: " + this.block + "  Orientation: " + this.orientation + "  X: " + this.x + "  Y: " +this.y;
     }
+
+    boolean getHeight() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
