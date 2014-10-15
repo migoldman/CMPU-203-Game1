@@ -241,6 +241,20 @@ public class Testers extends TetrisWorld{
             if(canRotate(test.user) == false)
                 System.out.println("Wrong with rotate on left wall");
         }
+        else if(randomInt() == 3 || randomInt() == 4) {
+            test = testWorld(makeBlock(randomInt()).setPos(9, 10), MT); 
+            int type = test.user.getType();
+            
+            if(canRotate(test.user) == true && (type!=0 ||type!=3 || type!=4||type!=1)) {
+                System.out.println("Something wrong with right wall rotate");
+            }
+        }
+        else if(randomInt() == 5) {
+            test = testWorld(makeBlock(randomInt()).setPos(4,5),MT);
+            int type = test.user.getType();
+            if(canRotate(test.user) == true  && (type == 0 || type == 3 || type == 4 || type ==1))
+                System.out.println("Should not rotate next to block");
+        }
         else if(randomInt() >= 6)
             MT.add(new Shapes(ShapeType.SQUARE, Rotation.UP, 6, 5));
             test = testWorld(shape.setPos(3, 5), MT);
@@ -250,24 +264,8 @@ public class Testers extends TetrisWorld{
                     test.user.getOrientation() != 3))) {
                 System.out.println("wrong with rotate on right side");
             }
-        else if(randomInt() == 3 || randomInt() == 4) {
-            test = testWorld(makeBlock(randomInt()).setPos(9, 10), MT); 
-            int type = test.user.getType();
-            
-            if(canRotate(test.user) == true && (type!=0 ||type!=3 || type!=4||type!=1)) {
-                System.out.println("Something wrong with right wall rotate");
-            }
-            //Not sure about this test believe it is not accurate
-            else if(canRotate(test.user) == false && (type == 0 || type == 3 || type == 4 || type ==1)) 
-                System.out.println("Should have rotated on right wall");
-        }
-        else if(randomInt() == 5) {
-            test = testWorld(makeBlock(randomInt()).setPos(4,5),MT);
-            int type = test.user.getType();
-            if(canRotate(test.user) == true  && (type == 0 || type == 3 || type == 4 || type ==1))
-                System.out.println("Should not rotate next to block");
-        }
     }
+    
     
     public static void testStart(){
         if(newWorld().placedShapes.size() != 0 || frames != 0) {
@@ -356,8 +354,8 @@ public class Testers extends TetrisWorld{
          new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
          System.out.println("Block next to Rwall has block on left  false = " + 
          new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnLeft(user,placedShapes));
-        TetrisWorld game = new TetrisWorld();
-        game.bigBang(300, 600, 1);
+        //TetrisWorld game = new TetrisWorld();
+        //game.bigBang(300, 600, 1);
     }
 }
 
