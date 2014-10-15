@@ -96,6 +96,14 @@ public class Testers extends TetrisWorld{
         return placed;
     }
     
+    //testing
+    //makes a random world
+    public static TetrisWorld newWorld() {
+        frames = 0;
+        return new TetrisWorld(makeBlock(randomInt()), new LinkedList<Shapes>());
+    }
+    
+    //makes the world you specified, Unneeded but I got in the habit of making everything in a testers 'Test' or Huh
     public static TetrisWorld testWorld(Shapes user, LinkedList<Shapes> placed) {
         return new TetrisWorld(user, placed);
     }
@@ -305,7 +313,7 @@ public class Testers extends TetrisWorld{
     
     
     public static void main(String[] args) {
-        for(int i = 0; i < 50; i++) {
+        for(int i = 0; i < 100; i++) {
             testStart();
             movedLeftMT();
             movedLeft();

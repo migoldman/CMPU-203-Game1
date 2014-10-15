@@ -248,11 +248,6 @@ public class TetrisWorld extends World {
         this.placedShapes = placedShapes;
     }
     
-    //testing
-    public static TetrisWorld newWorld() {
-        frames = 0;
-        return new TetrisWorld(makeBlock(randomInt()), new LinkedList<Shapes>());
-    }
 
     //makes a random int 1-7 for block types
     public static int randomInt() {
