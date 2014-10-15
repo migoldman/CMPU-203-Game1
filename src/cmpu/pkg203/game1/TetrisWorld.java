@@ -721,8 +721,8 @@ public class TetrisWorld extends World {
                     case 3:
                         return shapeDraw(XPOS * S, YPOS * S,
                                 XPOS * S, (YPOS + 1) * S,
-                                (XPOS + 1) * S, (YPOS + 1) * S,
-                                (XPOS + 2) * S, (YPOS + 1) * S);
+                                (XPOS + 1) * S, YPOS * S,
+                                (XPOS + 2) * S, YPOS * S);
                 }
             case 6:
                 switch (orientation) {
@@ -809,45 +809,7 @@ public class TetrisWorld extends World {
             return new WorldEnd(false, this.makeImage());
         }
     }
-
-    public static void main(String[] args) {
-
-        //TESTERS
-        TetrisWorld lWall = new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,0),new LinkedList<Shapes>());
-        TetrisWorld rWall = new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>());
-        
-        Shapes square = new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 0);
-        LinkedList<Shapes> MT = new LinkedList<Shapes>();
-        LinkedList<Shapes> stackTest = new LinkedList<Shapes>();
-        stackTest.add(new Shapes(ShapeType.SQUARE, Rotation.UP, 16, 5));
-
-        System.out.println("random number: " + randomInt());
-
-        System.out.println("Height of [0][0] " + getHeight(square));
-        System.out.println("lWall.");
-        System.out.println("Get Type returned a square to be " + makeBlock(1).getType() + " should be 0");
-        System.out.println("Get Type returned a S to be " + makeBlock(2).getType() + " should be 1");
-        System.out.println("Get Type returned a line to be " + makeBlock(3).getType() + " should be 2");
-        System.out.println("Get Type returned a t to be " + makeBlock(4).getType() + " should be 3");
-        System.out.println("Get Type returned a z to be " + makeBlock(5).getType() + " should be 4");
-        System.out.println("Get Type returned a l to be " + makeBlock(6).getType() + " should be 5");
-        System.out.println("Get Type returned a rl to be " + makeBlock(7).getType() + " should be 6");
-        System.out.println("Get Type random is " + makeBlock(randomInt()).getType());*/
-
-        System.out.println("Block on block has block below true = " + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 16), stackTest).blockBelow(user, stackTest));
-        System.out.println("Block on block has block below true = " + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 18), stackTest).blockBelow(user, stackTest));
-
-        System.out.println("Block on floor has floor below true = "
-                + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 18), MT).onFloorHuh());
-
-         
-         /*System.out.println("Block next to Lwall has block on right false =" + 
-         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,5),new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
-         System.out.println("Block next to Rwall has block on right true =" + 
-         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
-         System.out.println("Block next to Rwall has block on left  false = " + 
-         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnLeft(user,placedShapes));*/
-        TetrisWorld game = new TetrisWorld();
-        game.bigBang(300, 600, 1);
-    }
 }
+    
+
+    
