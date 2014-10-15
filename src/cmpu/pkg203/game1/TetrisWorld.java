@@ -456,9 +456,9 @@ public class TetrisWorld extends World {
         int type = block.getType();
         int orientation = block.getOrientation();
         switch (type) {
-            case 0:
+            case 0: //square
                 return 2;
-            case 1:
+            case 1: //s
                 switch (orientation) {
                     case 0:
                         return 2;
@@ -469,7 +469,7 @@ public class TetrisWorld extends World {
                     case 3:
                         return 3;
                 }
-            case 2:
+            case 2: //line
                 switch (orientation) {
                     case 0:
                         return 4;
@@ -480,7 +480,7 @@ public class TetrisWorld extends World {
                     case 3:
                         return 1;
                 }
-            case 3:
+            case 3: //t
                 switch (orientation) {
                     case 0:
                         return 2;
@@ -491,7 +491,7 @@ public class TetrisWorld extends World {
                     case 3:
                         return 3;
                 }
-            case 4:
+            case 4://z
                 switch (orientation) {
                     case 0:
                         return 2;
@@ -502,7 +502,7 @@ public class TetrisWorld extends World {
                     case 3:
                         return 3;
                 }
-            case 5:
+            case 5: //l
                 switch (orientation) {
                     case 0:
                         return 3;
@@ -513,7 +513,7 @@ public class TetrisWorld extends World {
                     case 3:
                         return 2;
                 }
-            case 6:
+            case 6: //r
                 switch (orientation) {
                     case 0:
                         return 3;
@@ -549,7 +549,6 @@ public class TetrisWorld extends World {
         int y = user.y;
         int newY = y + 1;
         //Block is always moving down, while can move left or right with x
-        System.out.println("key event: " + ke);
         switch (ke) {
             case ("left"):
                 if (!blockOnLeft(user, placedShapes)&&(user.x>0) ) {
@@ -567,6 +566,7 @@ public class TetrisWorld extends World {
                 break;
             case ("up"):
                 if (canRotate(user)) {
+                    System.out.println("Rotating");
                     temp = new TetrisWorld(this.user.rotate(), this.placedShapes);
                     break;
                 }
@@ -770,21 +770,32 @@ public class TetrisWorld extends World {
         }
     }
 
-//    public WorldImage drawScore() {
-//        return new TextImage(new Posn(screenWidth / 2, screenHeight - 30),
-//                "Score: " + placedShapes.size(), 8, new White());
-//    }
+    public WorldImage drawScore() {
+        return new TextImage(new Posn(screenWidth / 2, screenHeight/2),
+                "Score: " + placedShapes.size(), 8, new White());
+    }
 
+    public static boolean gameOverHuh(TetrisWorld test) {
+        for (Shapes placedShape : placedShapes) {
+                if (placedShape.y == 0) {
+                    return true;
+                }
+            }
+        return false;
+    }
+    
     public WorldImage makeImage() {
-        return new OverlayImages((placedImages(placedShapes, placedShapes.size() - 1)),blockImages(user));
+        return new OverlayImages(
+                (placedImages(placedShapes, placedShapes.size() - 1)),
+                new OverlayImages(blockImages(user), drawScore()));
     }
 
     public TetrisWorld onTick() {
         System.out.println(user.ToString());
-        if (blockBelow(user, placedShapes) || onFloorHuh()) {
-            if(user.y == 0) {
+        if(gameOverHuh(this)) {
                 gameOver = true;
             }
+        if (blockBelow(user, placedShapes) || onFloorHuh()) {
             placedShapes.add(new Shapes(user.block, user.orientation, user.x, user.y));
             System.out.println("On floor or Block");
             return new TetrisWorld(makeBlock(randomInt()), placedShapes);
@@ -809,7 +820,7 @@ public class TetrisWorld extends World {
         if (gameOver==true) {
             return new WorldEnd(true, new OverlayImages(this.makeImage(),
                     new TextImage(new Posn(screenWidth / 2, screenHeight / 2),
-                            ("Game Over: You've reached level " + placedShapes.size()),
+                            ("Game Over: You've got a score of " + placedShapes.size()),
                             20, new White())));
         } else {
             return new WorldEnd(false, this.makeImage());
