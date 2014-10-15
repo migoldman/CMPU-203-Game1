@@ -29,7 +29,6 @@ public class TetrisWorld extends World {
 
     static final int S = 30;
 
-    static int frames;
 
     static Shapes user;
     static LinkedList<Shapes> placedShapes;
@@ -240,7 +239,6 @@ public class TetrisWorld extends World {
     public TetrisWorld() {
         this.user = new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 0);
         this.placedShapes = new LinkedList<Shapes>();
-        this.frames = 0;
     }
 
     public TetrisWorld(Shapes user, LinkedList<Shapes> placedShapes) {
@@ -772,7 +770,7 @@ public class TetrisWorld extends World {
 
     public static boolean gameOverHuh(TetrisWorld test) {
         for (Shapes placed : placedShapes) {
-                if (placed.y <= 2) {
+                if (placed.y <= 1) {
                     return true;
                 }
             }
@@ -797,16 +795,13 @@ public class TetrisWorld extends World {
             return new TetrisWorld(makeBlock(randomInt()), placedShapes);
         } else if (blockOnLeft(user, placedShapes)||(user.x <=0)) {
             System.out.println("tick blockLeft");
-            frames++;
             return new TetrisWorld(user.setPos(user.x, user.y+1), placedShapes);
         } else if (blockOnRight(user, placedShapes)||(user.x + getWidth(user) >=10)) {
             System.out.println("tick blockRight");
-            frames++;
             return new TetrisWorld(user.setPos(user.x, user.y+1), placedShapes);
         } else {
             gameOver=false;
             System.out.println("tick default");
-            frames++;
             return new TetrisWorld(user, placedShapes).onKeyEvent("");
         }
     }
@@ -816,7 +811,7 @@ public class TetrisWorld extends World {
     public WorldEnd worldEnds() {
         if (gameOver==true) {
             System.out.println("The World is filled up! You placed " + placedShapes.size() + " blocks!");
-            return new WorldEnd(true, new OverlayImages(this.makeImage(),
+            return new WorldEnd(true, new OverlayImages(makeImage(),
                     new TextImage(new Posn(screenWidth / 2, screenHeight / 2),
                             ("Game Over: You've got a score of " + placedShapes.size()),
                             20, new White())));

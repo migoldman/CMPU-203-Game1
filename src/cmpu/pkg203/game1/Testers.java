@@ -99,7 +99,6 @@ public class Testers extends TetrisWorld{
     //testing
     //makes a random world
     public static TetrisWorld newWorld() {
-        frames = 0;
         return new TetrisWorld(makeBlock(randomInt()), new LinkedList<Shapes>());
     }
     
@@ -207,37 +206,41 @@ public class Testers extends TetrisWorld{
     }
     
     public static void heightWidthTest() {
-        Shapes test = randomShapes();
+        Shapes test = new TetrisWorld(makeBlock(randomInt()),MT).user;
         int height = getHeight(test);
         int width = getWidth(test);
         switch(test.getType()) {
             case 0: // square
                 if(height != 2 || width != 2)
-                    System.out.println("square fail");
+                    System.out.println("square height and width combo is wrong");
+                else
+                    System.out.println("square is good");
                 break;
             case 1: //s
                 if(((height!= 2) && (width !=3) || ((height != 3) && (width !=2))))
-                    System.out.println("S fail");
+                    System.out.println("S height and width combo is wrong");
                 break;
             case 2: //line
                 if(((height!= 4) && (width !=1) || ((height != 1) && (width !=4))))
-                    System.out.println("Line fail");
+                    System.out.println("Line height and width combo is wrong");
+                else
+                    System.out.println("Line is good");
                 break;
             case 3:
                 if(((height!= 2) && (width !=3) || ((height != 3) && (width !=2))))
-                    System.out.println("T fail");
+                    System.out.println("T height and width combo is wrong");
                 break;
             case 4:
                 if(((height!= 2) && (width !=3) || ((height != 3) && (width !=2))))
-                    System.out.println("z fail");
+                    System.out.println("z height and width combo is wrong");
                 break;
             case 5:
                 if(((height!= 3) && (width !=2) || ((height != 2) && (width !=3))))
-                    System.out.println("L fail");
+                    System.out.println("L height and width combo is wrong");
                 break;
             case 6:
                 if(((height!= 3) && (width !=2) || ((height != 2) && (width !=3))))
-                    System.out.println("rL fail");
+                    System.out.println("rL height and width combo is wrong");
                 break;
             default: 
                 throw new RuntimeException("Something got really messed up in heightWidth");
@@ -278,9 +281,8 @@ public class Testers extends TetrisWorld{
             }
     }
     
-    
     public static void testStart(){
-        if(newWorld().placedShapes.size() != 0 || frames != 0) {
+        if(newWorld().placedShapes.size() != 0) {
             throw new RuntimeException("Error with test start");
         }
         
@@ -305,10 +307,6 @@ public class Testers extends TetrisWorld{
                 System.out.println("Game should be Over");
             }
         }
-        
-            if(gameOverHuh(test) == true) {
-                System.out.println("I'm not done yet!");
-        }
     }
     
     public static void getMatrixTest() {
@@ -318,21 +316,54 @@ public class Testers extends TetrisWorld{
        }
     }
     
+    public static void moveDownHuh() {
+        TetrisWorld before = newWorld();
+        TetrisWorld after = newWorld().onKeyEvent("down");
+        Shapes user = newWorld().user;
+        if(before.user.y + getHeight(before.user) < 15) {
+            if(after.user.y == before.user.y) {
+                System.out.println("moved up or didn't move");
+            }
+        }
+    }
+    
+    public static void blockBelowHuh() {
+        Shapes user = randomShapes();
+        TetrisWorld before = testWorld(user,randomPlaced(randomInt()));
+        TetrisWorld after = testWorld(user,randomPlaced(randomInt())).onKeyEvent("down");
+        if(after.user.y < before.user.y) {
+            System.out.println("YOU MOVED UP?!");
+        }
+        for(int j = 0; j < getHeight(user); j++) {
+            for(int i = 0; i < after.placedShapes.size(); i ++) {
+                if(after.user.x == before.user.x && 
+                    (before.user.x  + getHeight(user) < 20) 
+                    && after.user.y +j == placedShapes.get(i).x 
+                    && after.user.x == placedShapes.get(i).x) {
+                System.out.println("Moved into block below");
+                }
+            }
+        }
+    }
+    
+    
     
     
     
     public static void main(String[] args) {
         for(int i = 0; i < 100; i++) {
-            testStart();
-            movedLeftMT();
-            movedLeft();
-            movedRightMT();
-            movedRight();
-            onGround();
-            heightWidthTest();
-            rotateTest();
-            loseTest();
-            getMatrixTest();
+//            testStart();
+//            movedLeftMT();
+//            movedLeft();
+//            movedRightMT();
+//            movedRight();
+//            onGround();
+//            heightWidthTest();
+//            rotateTest();
+//            loseTest();
+//            getMatrixTest();
+           moveDownHuh();
+//            blockBelowHuh();
             
         }
 
@@ -343,7 +374,7 @@ public class Testers extends TetrisWorld{
         Shapes square = new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 0);
         LinkedList<Shapes> MT = new LinkedList<Shapes>();
         LinkedList<Shapes> stackTest = new LinkedList<Shapes>();
-        stackTest.add(new Shapes(ShapeType.SQUARE, Rotation.UP, 16, 5));
+        stackTest.add(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 16));
 
         System.out.println("random number: " + randomInt());
         System.out.println("user x 5 = " + user.x);
@@ -361,20 +392,24 @@ public class Testers extends TetrisWorld{
         System.out.println("Get Type random is " + makeBlock(randomInt()).getType());
 
         System.out.println("Block on block has block below true = " + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 16), stackTest).blockBelow(user, stackTest));
-        System.out.println("Block on block has block below true = " + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 18), stackTest).blockBelow(user, stackTest));
-
-        System.out.println("Block on floor has floor below true = "
-                + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 18), MT).onFloorHuh());
+        System.out.println("Block on floor has floor below false = "
+                + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 15), MT).onFloorHuh());
 
          
          System.out.println("Block next to Lwall has block on right false =" + 
          new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,0,5),new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
-         System.out.println("Block next to Rwall has block on right true =" + 
-         new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
          System.out.println("Block next to Rwall has block on left  false = " + 
          new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnLeft(user,placedShapes));
-        TetrisWorld game = new TetrisWorld();
-        game.bigBang(300, 600, 1);
+         System.out.println("Block right next to Block has block on right true = " +
+                  new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 3, 16), stackTest).blockOnRight(user, stackTest));
+        System.out.println("Block right next to Block has block on left false = " +
+                  new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 3, 16), stackTest).blockOnLeft(user, stackTest));
+        System.out.println("Block left next to Block has block on left true = " +
+                  new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 7, 16), stackTest).blockOnLeft(user, stackTest));
+        System.out.println("Line sideways next to block true = " + 
+                new TetrisWorld(new Shapes(ShapeType.LINE, Rotation.LEFT, 2, 16), stackTest).blockOnRight(user, stackTest));
+//        TetrisWorld game = new TetrisWorld();
+//        game.bigBang(300, 600, 1);
     }
 }
 
