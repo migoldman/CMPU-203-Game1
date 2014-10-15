@@ -24,6 +24,7 @@ public class TetrisWorld extends World {
     static final int screenWidth = columns * 300;
     static final int screenHeight = rows * 300;
     static int[][] worldArray;
+    boolean gameOver = false;
     static Random random = new Random();
 
     static final int S = 30;
@@ -304,8 +305,8 @@ public class TetrisWorld extends World {
                     for (int prow = 0; prow < 4; prow++) {
                         badMove |= ((user.y + urow + 1) == (placed.y + prow)
                                 && ((user.x + ucol) == (placed.x + pcol))
-                                && (getMatrix(user)[ucol][urow]) == 1
-                                && (getMatrix(placed)[pcol][prow] == 1));
+                                && (SHAPES[user.getType()][user.getOrientation()][ucol][urow]) == 1
+                                && (SHAPES[placed.getType()][placed.getOrientation()][pcol][prow] == 1));
                     }
                 }
             }
@@ -581,18 +582,17 @@ public class TetrisWorld extends World {
                 screenWidth, screenHeight, new Black());
     }
 
-    //This is just silly
     public WorldImage blockDraw(int x, int y) {
-        return new RectangleImage(new Posn(x, y), S, S, new White());
+        return new RectangleImage(new Posn(x, y), S, S, new Red());
     }
+
 
     public WorldImage shapeDraw(int x1, int y1, int x2, int y2,
             int x3, int y3, int x4, int y4) {
-        return new OverlayImages(background(),
-                new OverlayImages(blockDraw(x1, y1),
+        return new OverlayImages(blockDraw(x1, y1),
                         new OverlayImages(blockDraw(x2, y2),
                                 new OverlayImages(blockDraw(x3, y3),
-                                        blockDraw(x4, y4)))));
+                                        blockDraw(x4, y4))));
     }
 
     //I really hope there is a better way to do this so I don't ever have to do this again
@@ -740,7 +740,7 @@ public class TetrisWorld extends World {
                         return shapeDraw(XPOS * S, YPOS * S,
                                 XPOS * S, (YPOS + 1) * S,
                                 XPOS * S, (2 + YPOS) * S,
-                                (XPOS + 1) * S, (YPOS + 1) * S);
+                                (XPOS + 1) * S, YPOS * S);
                     case 3:
                         return shapeDraw(XPOS * S, YPOS * S,
                                 XPOS * S, (YPOS + 1) * S,
@@ -764,24 +764,23 @@ public class TetrisWorld extends World {
         }
     }
 
-    public WorldImage drawScore() {
-        return new TextImage(new Posn(screenWidth / 2, screenHeight - 30),
-                "Score: " + placedShapes.size(), 8, new White());
-    }
+//    public WorldImage drawScore() {
+//        return new TextImage(new Posn(screenWidth / 2, screenHeight - 30),
+//                "Score: " + placedShapes.size(), 8, new White());
+//    }
 
     public WorldImage makeImage() {
-        return new OverlayImages((placedImages(placedShapes, placedShapes.size() - 1)),
-                new OverlayImages(blockImages(user), drawScore()));
+        return new OverlayImages((placedImages(placedShapes, placedShapes.size() - 1)),blockImages(user));
     }
 
     public TetrisWorld onTick() {
-        if (gameOver()) {
-            loseScreen();
-        }
         System.out.println(user.ToString());
         if (blockBelow(user, placedShapes) || onFloorHuh()) {
-            System.out.println("tick blockBelow||on");
+            if(user.y == 0) {
+                gameOver = true;
+            }
             placedShapes.add(new Shapes(user.block, user.orientation, user.x, user.y));
+            System.out.println("On floor or Block");
             return new TetrisWorld(makeBlock(randomInt()), placedShapes);
         } else if (blockOnLeft(user, placedShapes)||(user.x <=0)) {
             System.out.println("tick blockLeft");
@@ -799,17 +798,9 @@ public class TetrisWorld extends World {
     }
 
     //Game over
-    public boolean gameOver() {
-        for (int i = 0; i < placedShapes.size(); i++) {
-            if (placedShapes.get(i).y <= 7) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public WorldEnd loseScreen() {
-        if (gameOver()) {
+        if (gameOver==true) {
             return new WorldEnd(true, new OverlayImages(this.makeImage(),
                     new TextImage(new Posn(screenWidth / 2, screenHeight / 2),
                             ("Game Over: You've reached level " + placedShapes.size()),
@@ -834,16 +825,17 @@ public class TetrisWorld extends World {
 
         System.out.println("Height of [0][0] " + getHeight(square));
         System.out.println("lWall.");
-        /*System.out.println("Get Type returned a square to be " + makeBlock(1).getType() + " should be 0");
-         System.out.println("Get Type returned a S to be " + makeBlock(2).getType() + " should be 1");
-         System.out.println("Get Type returned a line to be " + makeBlock(3).getType() + " should be 2");
-         System.out.println("Get Type returned a t to be " + makeBlock(4).getType() + " should be 3");
-         System.out.println("Get Type returned a z to be " + makeBlock(5).getType() + " should be 4");
-         System.out.println("Get Type returned a l to be " + makeBlock(6).getType() + " should be 5");
-         System.out.println("Get Type returned a rl to be " + makeBlock(7).getType() + " should be 6");
-         System.out.println("Get Type random is " + makeBlock(randomInt()).getType());*/
+        System.out.println("Get Type returned a square to be " + makeBlock(1).getType() + " should be 0");
+        System.out.println("Get Type returned a S to be " + makeBlock(2).getType() + " should be 1");
+        System.out.println("Get Type returned a line to be " + makeBlock(3).getType() + " should be 2");
+        System.out.println("Get Type returned a t to be " + makeBlock(4).getType() + " should be 3");
+        System.out.println("Get Type returned a z to be " + makeBlock(5).getType() + " should be 4");
+        System.out.println("Get Type returned a l to be " + makeBlock(6).getType() + " should be 5");
+        System.out.println("Get Type returned a rl to be " + makeBlock(7).getType() + " should be 6");
+        System.out.println("Get Type random is " + makeBlock(randomInt()).getType());*/
 
-        System.out.println("Block on block has block below true = " + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 16, 5), stackTest).blockBelow(user, stackTest));
+        System.out.println("Block on block has block below true = " + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 16), stackTest).blockBelow(user, stackTest));
+        System.out.println("Block on block has block below true = " + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 18), stackTest).blockBelow(user, stackTest));
 
         System.out.println("Block on floor has floor below true = "
                 + new TetrisWorld(new Shapes(ShapeType.SQUARE, Rotation.UP, 5, 18), MT).onFloorHuh());
