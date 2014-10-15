@@ -158,12 +158,14 @@ public class Testers extends TetrisWorld{
         if(after.user.y < before.user.y) {
             System.out.println("YOU MOVED UP?!");
         }
-        for(int i = 0; i < after.placedShapes.size(); i ++) {
+        for(int j = 0; j < getWidth(user); j++) {
+            for(int i = 0; i < after.placedShapes.size(); i ++) {
             if(after.user.x == before.user.x && before.user.x !=0 
                 && (before.user.x <9 && before.user.y > 15) 
-                    && after.user.x == placedShapes.get(i).x 
+                    && after.user.x + j == placedShapes.get(i).x 
                     && after.user.y == placedShapes.get(i).y) {
-               System.out.println("Moved into block");
+                System.out.println("Moved into block left");
+                }
             }
         }
     }
@@ -177,12 +179,14 @@ public class Testers extends TetrisWorld{
         if(after.user.y < before.user.y) {
             System.out.println("YOU MOVED UP?!");
         }
-        for(int i = 0; i < after.placedShapes.size(); i ++) {
-            if(after.user.x == before.user.x && 
+        for(int j = 0; j < getWidth(user); j++) {
+            for(int i = 0; i < after.placedShapes.size(); i ++) {
+                if(after.user.x == before.user.x && 
                     (before.user.x  + getHeight(user) < 10 && before.user.y > 15) 
-                    && after.user.x == placedShapes.get(i).x 
+                    && after.user.x +j == placedShapes.get(i).x 
                     && after.user.y == placedShapes.get(i).y) {
-               System.out.println("Moved into block");
+                System.out.println("Moved into block Right");
+                }
             }
         }
     }
@@ -301,6 +305,10 @@ public class Testers extends TetrisWorld{
                 System.out.println("Game should be Over");
             }
         }
+        
+            if(gameOverHuh(test) == true) {
+                System.out.println("I'm not done yet!");
+        }
     }
     
     public static void getMatrixTest() {
@@ -309,6 +317,7 @@ public class Testers extends TetrisWorld{
            System.out.println("Something went wrong with Matrix");
        }
     }
+    
     
     
     
@@ -337,9 +346,11 @@ public class Testers extends TetrisWorld{
         stackTest.add(new Shapes(ShapeType.SQUARE, Rotation.UP, 16, 5));
 
         System.out.println("random number: " + randomInt());
-
+        System.out.println("user x 5 = " + user.x);
+        System.out.println("user y 0 = " + user.y);
+        System.out.println("User x coordinate newworld 5 = " + newWorld().user.x);
+        System.out.println("User y coordinate newworld 0 = " + newWorld().user.y);
         System.out.println("Height of [0][0] " + getHeight(square));
-        System.out.println("lWall.");
         System.out.println("Get Type returned a square to be " + makeBlock(1).getType() + " should be 0");
         System.out.println("Get Type returned a S to be " + makeBlock(2).getType() + " should be 1");
         System.out.println("Get Type returned a line to be " + makeBlock(3).getType() + " should be 2");
@@ -362,8 +373,8 @@ public class Testers extends TetrisWorld{
          new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnRight(user, placedShapes));
          System.out.println("Block next to Rwall has block on left  false = " + 
          new TetrisWorld(new Shapes(ShapeType.SQUARE,Rotation.UP,8,5),new LinkedList<Shapes>()).blockOnLeft(user,placedShapes));
-        //TetrisWorld game = new TetrisWorld();
-        //game.bigBang(300, 600, 1);
+        TetrisWorld game = new TetrisWorld();
+        game.bigBang(300, 600, 1);
     }
 }
 

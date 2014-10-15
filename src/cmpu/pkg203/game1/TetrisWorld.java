@@ -24,7 +24,7 @@ public class TetrisWorld extends World {
     static final int screenWidth = columns * 300;
     static final int screenHeight = rows * 300;
     static int[][] worldArray;
-    static boolean gameOver = false;
+    static boolean gameOver;
     static Random random = new Random();
 
     static final int S = 30;
@@ -771,8 +771,8 @@ public class TetrisWorld extends World {
     }
 
     public static boolean gameOverHuh(TetrisWorld test) {
-        for (Shapes placedShape : placedShapes) {
-                if (placedShape.y == 0) {
+        for (Shapes placed : placedShapes) {
+                if (placed.y <= 2) {
                     return true;
                 }
             }
@@ -787,6 +787,7 @@ public class TetrisWorld extends World {
 
     public TetrisWorld onTick() {
         System.out.println(user.ToString());
+        System.out.println("game over is " + gameOver);
         if(gameOverHuh(this)) {
                 gameOver = true;
             }
@@ -803,6 +804,7 @@ public class TetrisWorld extends World {
             frames++;
             return new TetrisWorld(user.setPos(user.x, user.y+1), placedShapes);
         } else {
+            gameOver=false;
             System.out.println("tick default");
             frames++;
             return new TetrisWorld(user, placedShapes).onKeyEvent("");
@@ -811,8 +813,9 @@ public class TetrisWorld extends World {
 
     //Game over
 
-    public WorldEnd loseScreen() {
+    public WorldEnd worldEnds() {
         if (gameOver==true) {
+            System.out.println("The World is filled up! You placed " + placedShapes.size() + " blocks!");
             return new WorldEnd(true, new OverlayImages(this.makeImage(),
                     new TextImage(new Posn(screenWidth / 2, screenHeight / 2),
                             ("Game Over: You've got a score of " + placedShapes.size()),
